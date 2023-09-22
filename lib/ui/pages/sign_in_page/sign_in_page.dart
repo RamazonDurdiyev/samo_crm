@@ -101,7 +101,7 @@ class SignInPage extends StatelessWidget {
       child: SizedBox(
         child: TextField(
           controller: ctrl,
-          cursorColor: const Color.fromARGB(255, 4, 27, 66),
+          cursorColor: Colors.indigo,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
             suffixIcon: const Icon(

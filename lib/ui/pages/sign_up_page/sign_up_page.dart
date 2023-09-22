@@ -100,9 +100,14 @@ class SignUpPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const HomePage();
-          },),);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return const HomePage();
+              },
+            ),
+          );
         },
         style: ElevatedButton.styleFrom(
           shape: const RoundedRectangleBorder(
@@ -129,7 +134,7 @@ class SignUpPage extends StatelessWidget {
       child: SizedBox(
         child: TextField(
           controller: ctrl,
-          cursorColor: const Color.fromARGB(255, 4, 27, 66),
+          cursorColor: Colors.indigo,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
             suffixIcon: const Icon(
