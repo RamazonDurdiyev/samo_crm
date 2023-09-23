@@ -2,10 +2,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:samo_crm/ui/notification_page/notification_page.dart';
+import 'package:samo_crm/ui/pages/notification_page/notification_page.dart';
+import 'package:samo_crm/ui/pages/profile_settings/profile_settings_page.dart';
+import 'package:samo_crm/ui/pages/settings_page/settings_page.dart';
 import 'package:samo_crm/ui/pages/sign_up_page/sign_up_page.dart';
-import 'package:samo_crm/ui/profile_settings/profile_settings_page.dart';
-import 'package:samo_crm/ui/settings_page/settings_page.dart';
+import 'package:samo_crm/ui/pages/warehouse_in_page/warehouse_in_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -279,7 +280,7 @@ class HomePage extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: SizedBox(
-                        height: 120,
+                        height: 100,
                         child: LineChart(
                           LineChartData(
                             gridData: const FlGridData(show: false),
@@ -329,30 +330,6 @@ class HomePage extends StatelessWidget {
                                     color: Colors.green.withOpacity(0.1)),
                               ),
                             ],
-                            // : FlTitlesData(
-                            //     leftTitles: SideTitles(showTitles: true),
-                            //     bottomTitles: SideTitles(
-                            //       showTitles: true,
-                            //       getTitles: (value) {
-                            //         switch (value.toInt()) {
-                            //           case 0:
-                            //             return 'Mon';
-                            //           case 1:
-                            //             return 'Tue';
-                            //           case 2:
-                            //             return 'Wed';
-                            //           case 3:
-                            //             return 'Thu';
-                            //           case 4:
-                            //             return 'Fri';
-                            //           case 5:
-                            //             return 'Sat';
-                            //           case 6:
-                            //             return 'Sun';
-                            //         }
-                            //         return '';
-                            //       },
-                            //     ),
                           ),
                         ),
                       ),
@@ -393,7 +370,7 @@ class HomePage extends StatelessWidget {
           const SizedBox(
             height: 8,
           ),
-          _buildServicesGrid(),
+          _buildServicesGrid(context),
         ],
       ),
     );
@@ -411,7 +388,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  _buildServicesGrid() {
+  _buildServicesGrid(BuildContext context) {
     return GridView(
       padding: const EdgeInsets.symmetric(
         horizontal: 8,
@@ -425,108 +402,149 @@ class HomePage extends StatelessWidget {
       ),
       children: [
         _serviceButton(
+          context,
           const Icon(
             Icons.add,
             color: Colors.white,
           ),
           "Omborga mahsulot kiritish",
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) {
+          //       return const SettingsPage();
+          //     },
+          //   ),
+          // ),
+          const WarehouseInPage(),
         ),
         _serviceButton(
+          context,
           const Icon(
             Icons.remove,
             color: Colors.white,
           ),
           "ombordagi mahsulotni chiqarish",
+          const WarehouseInPage(),
         ),
         _serviceButton(
+          context,
           const Icon(
             Icons.home_filled,
             color: Colors.white,
           ),
           "Omborda mavjud mahsulotlar",
+          const WarehouseInPage(),
         ),
         _serviceButton(
+          context,
           const Icon(
             Icons.warning,
             color: Colors.white,
           ),
           "Yaroqsiz mahsulotlar",
+          const WarehouseInPage(),
         ),
         _serviceButton(
+          context,
           const Icon(
             Icons.history,
             color: Colors.white,
           ),
           "Kirim chiqim tarixi",
+          const WarehouseInPage(),
         ),
         _serviceButton(
+          context,
           const Icon(
             Icons.people,
             color: Colors.white,
           ),
           "Hodimlarni tayinlash",
+          const WarehouseInPage(),
         ),
         _serviceButton(
+          context,
           const Icon(
             Icons.library_books,
             color: Colors.white,
           ),
           "KPI amallari",
+          const WarehouseInPage(),
         ),
         _serviceButton(
+          context,
           const Icon(
             Icons.check_box,
             color: Colors.white,
           ),
           "Mahsulotlarni tasdiqlash",
+          const WarehouseInPage(),
         ),
       ],
     );
   }
 
-  _serviceButton(Icon icon, String task) {
-    return Card(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(
-          Radius.circular(16),
+  _serviceButton(
+    BuildContext context,
+    Icon icon,
+    String task,
+    page,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return page;
+            },
+          ),
+        );
+      },
+      child: Card(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
+          ),
         ),
-      ),
-      elevation: 3,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 16,
-            ),
-            Container(
-              width: 36,
-              height: 36,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.indigo,
+        elevation: 3,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 16,
               ),
-              child: icon,
-            ),
-            Expanded(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    task,
-                    textAlign: TextAlign.center,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w500),
+              Container(
+                width: 36,
+                height: 36,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.indigo,
+                ),
+                child: icon,
+              ),
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      task,
+                      textAlign: TextAlign.center,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 12, fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
