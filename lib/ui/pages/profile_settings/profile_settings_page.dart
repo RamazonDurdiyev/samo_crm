@@ -11,92 +11,103 @@ class ProfileSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = ProfileSettingsBloc();
     return Scaffold(
-      appBar: AppBar(
+      appBar: _buildAppBar(),
+      body: _buildBody(bloc),
+    );
+  }
+
+  _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.indigo,
+      title: const Text(
+        "Profile settings",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  _buildUserImageCircle(ProfileSettingsBloc bloc) {
+    return Card(
+      elevation: 5,
+      shadowColor: Colors.indigo,
+      shape: const CircleBorder(),
+      child: CircleAvatar(
         backgroundColor: Colors.indigo,
-        title: const Text(
-          "Profile settings",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        radius: 43,
+        child: GestureDetector(
+          onTap: () {
+            bloc.add(
+              PickImageEvent(),
+            );
+          },
+          child: const CircleAvatar(
+            radius: 40,
+            backgroundColor: Colors.white,
+            child: Icon(
+              Icons.person_2,
+              size: 32,
+              color: Colors.indigo,
+            ),
           ),
         ),
       ),
-      body: BlocBuilder<ProfileSettingsBloc, ProfileSettingsState>(
-          bloc: bloc,
-          builder: (context, state) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
+    );
+  }
+
+  _buildSeparateText(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  _buildBody(ProfileSettingsBloc bloc) {
+    return BlocBuilder<ProfileSettingsBloc, ProfileSettingsState>(
+      bloc: bloc,
+      builder: (context, state) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 32,
+              ),
+              _buildUserImageCircle(bloc),
+              const SizedBox(
+                height: 16,
+              ),
+              Row(
                 children: [
-                  const SizedBox(
-                    height: 32,
-                  ),
-                  Card(
-                    elevation: 5,
-                     shadowColor: Colors.indigo,
-                    shape: const CircleBorder(),
-                    child: CircleAvatar(
-                      backgroundColor: Colors.indigo,
-                      radius: 43,
-                      child: GestureDetector(
-                        onTap: () {
-                          bloc.add(
-                            PickImageEvent(),
-                          );
-                        },
-                        child: const CircleAvatar(
-                          radius: 40,
-                          backgroundColor: Colors.white,
-                          child: Icon(
-                            Icons.person_2,
-                            size: 32,
-                            color: Colors.indigo,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  const Row(
-                    children: [
-                      Text(
-                        "Edit Name",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  _buildTextField(TextEditingController(), "Full name"),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  const Row(
-                    children: [
-                      Text(
-                        "Edit phone number",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  _buildTextField(TextEditingController(), "Phone number"),
+                  _buildSeparateText("Edit name"),
                 ],
               ),
-            );
-          }),
+              const SizedBox(
+                height: 8,
+              ),
+              _buildTextField(TextEditingController(), "Full name"),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: [
+                  _buildSeparateText("Edit phone number"),
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              _buildTextField(TextEditingController(), "Phone number"),
+            ],
+          ),
+        );
+      },
     );
   }
 

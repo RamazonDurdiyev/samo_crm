@@ -1,21 +1,82 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:samo_crm/ui/pages/add_product_page/add_product_bloc.dart';
 import 'package:samo_crm/ui/pages/notification_page/notification_page.dart';
 import 'package:samo_crm/ui/pages/profile_settings/profile_settings_page.dart';
 import 'package:samo_crm/ui/pages/settings_page/settings_page.dart';
 import 'package:samo_crm/ui/pages/sign_up_page/sign_up_page.dart';
-import 'package:samo_crm/ui/pages/warehouse_in_page/warehouse_in_page.dart';
+import 'package:samo_crm/ui/pages/add_product_page/add_product_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final bloc = AddProductBloc();
     return Scaffold(
+      appBar: _buildAppBar(context, bloc),
       drawer: _buildDrawer(context),
       body: _buildBody(context),
+    );
+  }
+
+  _buildAppBar(BuildContext context, AddProductBloc bloc) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      title: const Text(
+        "Samo Techno",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const NotificationPage();
+                  },
+                ),
+              );
+            },
+            child: const Icon(
+              Icons.notifications,
+              color: Colors.indigo,
+              size: 28,
+            ),
+          ),
+        ),
+      ],
+      leading: Builder(
+        builder: (context) {
+          return GestureDetector(
+            onTap: () {
+              Scaffold.of(context).openDrawer();
+            },
+            child: const Icon(
+              Icons.analytics,
+              size: 40,
+              color: Colors.indigo,
+            ),
+          );
+        },
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size(double.infinity, 0),
+        child: Column(
+          children: [
+            _buildCustomDivider(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -178,195 +239,134 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  _buildSeparateText(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  _buildChart() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Card(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
+          ),
+        ),
+        elevation: 3,
+        child: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(
+              Radius.circular(
+                16,
+              ),
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: SizedBox(
+                  height: 100,
+                  child: LineChart(
+                    LineChartData(
+                      gridData: const FlGridData(show: false),
+                      titlesData: const FlTitlesData(show: false),
+                      borderData: FlBorderData(
+                        show: false,
+                        border: Border.all(
+                            color: const Color(0xff37434d), width: 1),
+                      ),
+                      minX: 0,
+                      maxX: 6,
+                      minY: 0,
+                      maxY: 10,
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: [
+                            const FlSpot(0, 9),
+                            const FlSpot(1, 4),
+                            const FlSpot(2, 10),
+                            const FlSpot(3, 2),
+                            const FlSpot(4, 4),
+                            const FlSpot(5, 4),
+                            const FlSpot(6, 4),
+                          ],
+                          isCurved: true,
+                          color: Colors.red,
+                          dotData: const FlDotData(show: false),
+                          belowBarData: BarAreaData(
+                              show: true, color: Colors.red.withOpacity(0.1)),
+                        ),
+                        LineChartBarData(
+                          spots: [
+                            const FlSpot(0, 4),
+                            const FlSpot(1, 4),
+                            const FlSpot(2, 4),
+                            const FlSpot(3, 7),
+                            const FlSpot(4, 6),
+                            const FlSpot(5, 7),
+                            const FlSpot(6, 8),
+                          ],
+                          isCurved: true,
+                          color: Colors.green,
+                          dotData: const FlDotData(show: false),
+                          belowBarData: BarAreaData(
+                              show: true, color: Colors.green.withOpacity(0.1)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildWeeksText("Mon"),
+                  _buildWeeksText("Tue"),
+                  _buildWeeksText("Wed"),
+                  _buildWeeksText("Thu"),
+                  _buildWeeksText("Fri"),
+                  _buildWeeksText("Sat"),
+                  _buildWeeksText("Sun"),
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   _buildBody(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: ScreenUtil().statusBarHeight + 8,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-            ),
-            child: Row(
-              children: [
-                Builder(builder: (context) {
-                  return GestureDetector(
-                    onTap: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: const Icon(
-                      Icons.analytics,
-                      size: 40,
-                      color: Colors.indigo,
-                    ),
-                  );
-                }),
-                const SizedBox(
-                  width: 8,
-                ),
-                const Text(
-                  "Samo Techno",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const Expanded(
-                  child: SizedBox(),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return const NotificationPage();
-                        },
-                      ),
-                    );
-                  },
-                  child: const Icon(
-                    Icons.notifications,
-                    color: Colors.indigo,
-                    size: 28,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Container(
-            height: 1,
-            color: Colors.indigo,
-          ),
           const SizedBox(
             height: 16,
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              "Analytics",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+          _buildSeparateText("Analytics"),
           const SizedBox(
             height: 8,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Card(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(16),
-                ),
-              ),
-              elevation: 3,
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(
-                      16,
-                    ),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: SizedBox(
-                        height: 100,
-                        child: LineChart(
-                          LineChartData(
-                            gridData: const FlGridData(show: false),
-                            titlesData: const FlTitlesData(show: false),
-                            borderData: FlBorderData(
-                              show: false,
-                              border: Border.all(
-                                  color: const Color(0xff37434d), width: 1),
-                            ),
-                            minX: 0,
-                            maxX: 6,
-                            minY: 0,
-                            maxY: 10,
-                            lineBarsData: [
-                              LineChartBarData(
-                                spots: [
-                                  const FlSpot(0, 9),
-                                  const FlSpot(1, 4),
-                                  const FlSpot(2, 10),
-                                  const FlSpot(3, 2),
-                                  const FlSpot(4, 4),
-                                  const FlSpot(5, 4),
-                                  const FlSpot(6, 4),
-                                ],
-                                isCurved: true,
-                                color: Colors.red,
-                                dotData: const FlDotData(show: false),
-                                belowBarData: BarAreaData(
-                                    show: true,
-                                    color: Colors.red.withOpacity(0.1)),
-                              ),
-                              LineChartBarData(
-                                spots: [
-                                  const FlSpot(0, 4),
-                                  const FlSpot(1, 4),
-                                  const FlSpot(2, 4),
-                                  const FlSpot(3, 7),
-                                  const FlSpot(4, 6),
-                                  const FlSpot(5, 7),
-                                  const FlSpot(6, 8),
-                                ],
-                                isCurved: true,
-                                color: Colors.green,
-                                dotData: const FlDotData(show: false),
-                                belowBarData: BarAreaData(
-                                    show: true,
-                                    color: Colors.green.withOpacity(0.1)),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildWeeksText("Mon"),
-                        _buildWeeksText("Tue"),
-                        _buildWeeksText("Wed"),
-                        _buildWeeksText("Thu"),
-                        _buildWeeksText("Fri"),
-                        _buildWeeksText("Sat"),
-                        _buildWeeksText("Sun"),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          _buildChart(),
           const SizedBox(
             height: 8,
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              "Services",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+          _buildSeparateText("Services"),
           const SizedBox(
             height: 8,
           ),
@@ -408,15 +408,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Omborga mahsulot kiritish",
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) {
-          //       return const SettingsPage();
-          //     },
-          //   ),
-          // ),
-          const WarehouseInPage(),
+          const AddProductPage(),
         ),
         _serviceButton(
           context,
@@ -425,7 +417,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "ombordagi mahsulotni chiqarish",
-          const WarehouseInPage(),
+          const AddProductPage(),
         ),
         _serviceButton(
           context,
@@ -434,7 +426,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Omborda mavjud mahsulotlar",
-          const WarehouseInPage(),
+          const AddProductPage(),
         ),
         _serviceButton(
           context,
@@ -443,7 +435,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Yaroqsiz mahsulotlar",
-          const WarehouseInPage(),
+          const AddProductPage(),
         ),
         _serviceButton(
           context,
@@ -452,7 +444,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Kirim chiqim tarixi",
-          const WarehouseInPage(),
+          const AddProductPage(),
         ),
         _serviceButton(
           context,
@@ -461,7 +453,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Hodimlarni tayinlash",
-          const WarehouseInPage(),
+          const AddProductPage(),
         ),
         _serviceButton(
           context,
@@ -470,7 +462,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "KPI amallari",
-          const WarehouseInPage(),
+          const AddProductPage(),
         ),
         _serviceButton(
           context,
@@ -479,7 +471,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Mahsulotlarni tasdiqlash",
-          const WarehouseInPage(),
+          const AddProductPage(),
         ),
       ],
     );
@@ -547,6 +539,13 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  _buildCustomDivider() {
+    return Container(
+      height: 1,
+      color: Colors.indigo,
     );
   }
 }

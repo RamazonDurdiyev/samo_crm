@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:samo_crm/ui/pages/warehouse_in_page/warehouse_in_event.dart';
-import 'package:samo_crm/ui/pages/warehouse_in_page/warehouse_in_state.dart';
+import 'package:samo_crm/ui/pages/add_product_page/add_product_event.dart';
+import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
 
-class WarehouseInBloc extends Bloc<WarehouseInEvent, WarehouseInState> {
-  WarehouseInBloc() : super(Initial()) {
+class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
+  AddProductBloc() : super(Initial()) {
     on<ShowDialogEvent>((event, emit) async {
       await popUpDialog(emit, event.context);
     });
     on<ChangeTabEvent>((event, emit) async {
-      await changeTab(emit);
+      await changeTab(emit, event.value);
     });
   }
 
   // Controllers
+
   TextEditingController addressCtrl = TextEditingController();
 
   // Data
-  bool changer = false;
 
-  popUpDialog(Emitter<WarehouseInState> emit, BuildContext context) async {
+  int currentIndexOfTab = 0;
+
+  popUpDialog(Emitter<AddProductState> emit, BuildContext context) async {
     try {
       ShowDialogState(state: State.loading);
       showDialog(
@@ -102,14 +104,14 @@ class WarehouseInBloc extends Bloc<WarehouseInEvent, WarehouseInState> {
     }
   }
 
-  changeTab(Emitter<WarehouseInState> emit) {
+  changeTab(Emitter<AddProductState> emit, int value) async {
     try {
-      ChangeTabState(state: State.loading);
-      changer = !changer;
-      ChangeTabState(state: State.loaded);
-      print(changer);
+      emit(ChangeTabState(state: State.loading));
+      currentIndexOfTab = value;
+      emit(ChangeTabState(state: State.loaded));
+      print(currentIndexOfTab);
     } catch (e) {
-      ChangeTabState(state: State.error);
+      emit(ChangeTabState(state: State.error));
     }
   }
 }
