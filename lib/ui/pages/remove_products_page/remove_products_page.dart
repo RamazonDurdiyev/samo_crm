@@ -1,33 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:samo_crm/ui/pages/add_product_page/add_product_bloc.dart';
-import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
 
-import 'add_product_event.dart';
+import 'package:samo_crm/ui/pages/remove_products_page/remove_products_bloc.dart';
+import 'package:samo_crm/ui/pages/remove_products_page/remove_products_event.dart';
+import 'package:samo_crm/ui/pages/remove_products_page/remove_products_state.dart';
 
-class AddProductPage extends StatelessWidget {
-  const AddProductPage({super.key});
+class RemoveProductPage extends StatelessWidget {
+  const RemoveProductPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final bloc = AddProductBloc();
+    final bloc = RemoveProductBloc();
     return Scaffold(
       appBar: _buildAppBar(context, bloc),
       body: _buildBody(bloc),
     );
   }
 
-  _buildAppBar(BuildContext context, AddProductBloc bloc) {
+  _buildAppBar(BuildContext context, RemoveProductBloc bloc) {
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
-      title: _buildSearchTextField(),
+      title: const Text(
+        "Ombordan chiqarish",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+      ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(
-            right: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: GestureDetector(
             onTap: () {
               // Navigator.push(
@@ -47,18 +52,14 @@ class AddProductPage extends StatelessWidget {
           ),
         ),
       ],
-      leadingWidth: 32,
       leading: GestureDetector(
         onTap: () {
           Navigator.pop(context);
         },
-        child: const Padding(
-          padding: EdgeInsets.only(left: 8),
-          child: Icon(
-            Icons.arrow_back,
-            size: 28,
-            color: Colors.indigo,
-          ),
+        child: const Icon(
+          Icons.arrow_back,
+          size: 28,
+          color: Colors.indigo,
         ),
       ),
       bottom: PreferredSize(
@@ -72,7 +73,7 @@ class AddProductPage extends StatelessWidget {
     );
   }
 
-  _buildBody(AddProductBloc bloc) {
+  _buildBody(RemoveProductBloc bloc) {
     return Stack(
       children: [
         SingleChildScrollView(
@@ -93,34 +94,6 @@ class AddProductPage extends StatelessWidget {
     );
   }
 
-  _buildSearchTextField() {
-    return SizedBox(
-      height: 40,
-      child: TextField(
-        controller: TextEditingController(),
-        cursorColor: Colors.indigo,
-        style: const TextStyle(color: Colors.black),
-        decoration: const InputDecoration(
-          suffixIcon: Icon(
-            Icons.search,
-            color: Colors.indigo,
-          ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16),
-          hintText: "Qidirish...",
-          hintStyle:
-              TextStyle(color: Colors.grey, fontSize: 16, fontFamily: "Lato"),
-          fillColor: Color.fromARGB(255, 236, 234, 234),
-          filled: true,
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(16),
-              ),
-              borderSide: BorderSide.none),
-        ),
-      ),
-    );
-  }
-
   _buildCustomDivider() {
     return Container(
       height: 1,
@@ -128,7 +101,7 @@ class AddProductPage extends StatelessWidget {
     );
   }
 
-  _buildFilterTab(AddProductBloc bloc) {
+  _buildFilterTab(RemoveProductBloc bloc) {
     return DefaultTabController(
       length: 2,
       initialIndex: bloc.currentIndexOfTab,
@@ -161,7 +134,7 @@ class AddProductPage extends StatelessWidget {
             ),
             onTap: (value) {
               bloc.add(
-                ChangeTabEvent(value: value),
+                ChangeRemoveTabEvent(value: value),
               );
             },
             tabs: const [
@@ -180,8 +153,8 @@ class AddProductPage extends StatelessWidget {
     );
   }
 
-  _buildListView(AddProductBloc bloc) {
-    return BlocBuilder<AddProductBloc, AddProductState>(
+_buildListView(RemoveProductBloc bloc) {
+    return BlocBuilder<RemoveProductBloc, RemoveProductState>(
       bloc: bloc,
       builder: (context, state) {
         return ListView.builder(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:samo_crm/ui/pages/profile_settings/profile_settings_bloc.dart';
-import 'package:samo_crm/ui/pages/profile_settings/profile_settings_event.dart';
-import 'package:samo_crm/ui/pages/profile_settings/profile_settings_state.dart';
+import 'package:samo_crm/ui/pages/profile_settings_page/profile_settings_bloc.dart';
+import 'package:samo_crm/ui/pages/profile_settings_page/profile_settings_event.dart';
+import 'package:samo_crm/ui/pages/profile_settings_page/profile_settings_state.dart';
 
 class ProfileSettings extends StatelessWidget {
   const ProfileSettings({super.key});

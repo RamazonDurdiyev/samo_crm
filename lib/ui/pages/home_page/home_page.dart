@@ -1,12 +1,21 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_bloc.dart';
+import 'package:samo_crm/ui/pages/cart_page/cart_page.dart';
+import 'package:samo_crm/ui/pages/confirm_employees_page/confirm_employees_page.dart';
+import 'package:samo_crm/ui/pages/confirm_products_page/confirm_products_page.dart';
+import 'package:samo_crm/ui/pages/defects_page/defects_page.dart';
+import 'package:samo_crm/ui/pages/history_page/history_page.dart';
+import 'package:samo_crm/ui/pages/kpi_page/kpi_page.dart';
 import 'package:samo_crm/ui/pages/notification_page/notification_page.dart';
-import 'package:samo_crm/ui/pages/profile_settings/profile_settings_page.dart';
+import 'package:samo_crm/ui/pages/profile_settings_page/profile_settings_page.dart';
+import 'package:samo_crm/ui/pages/remove_products_page/remove_products_page.dart';
+import 'package:samo_crm/ui/pages/search_address_page/search_address_page.dart';
 import 'package:samo_crm/ui/pages/settings_page/settings_page.dart';
 import 'package:samo_crm/ui/pages/sign_up_page/sign_up_page.dart';
-import 'package:samo_crm/ui/pages/add_product_page/add_product_page.dart';
+import 'package:samo_crm/ui/widgets/chart.dart';
+
+import '../products_page/products_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -34,25 +43,44 @@ class HomePage extends StatelessWidget {
         ),
       ),
       actions: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return const NotificationPage();
-                  },
-                ),
-              );
-            },
-            child: const Icon(
-              Icons.notifications,
-              color: Colors.indigo,
-              size: 28,
-            ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return const NotificationPage();
+                },
+              ),
+            );
+          },
+          child: const Icon(
+            Icons.notifications,
+            color: Colors.indigo,
+            size: 28,
           ),
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return const CartPage();
+                },
+              ),
+            );
+          },
+          child: const Icon(
+            Icons.shopping_cart,
+            color: Colors.indigo,
+          ),
+        ),
+        const SizedBox(
+          width: 8,
         ),
       ],
       leading: Builder(
@@ -252,104 +280,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  _buildChart() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Card(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
-          ),
-        ),
-        elevation: 3,
-        child: Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(
-              Radius.circular(
-                16,
-              ),
-            ),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: SizedBox(
-                  height: 100,
-                  child: LineChart(
-                    LineChartData(
-                      gridData: const FlGridData(show: false),
-                      titlesData: const FlTitlesData(show: false),
-                      borderData: FlBorderData(
-                        show: false,
-                        border: Border.all(
-                            color: const Color(0xff37434d), width: 1),
-                      ),
-                      minX: 0,
-                      maxX: 6,
-                      minY: 0,
-                      maxY: 10,
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: [
-                            const FlSpot(0, 9),
-                            const FlSpot(1, 4),
-                            const FlSpot(2, 10),
-                            const FlSpot(3, 2),
-                            const FlSpot(4, 4),
-                            const FlSpot(5, 4),
-                            const FlSpot(6, 4),
-                          ],
-                          isCurved: true,
-                          color: Colors.red,
-                          dotData: const FlDotData(show: false),
-                          belowBarData: BarAreaData(
-                              show: true, color: Colors.red.withOpacity(0.1)),
-                        ),
-                        LineChartBarData(
-                          spots: [
-                            const FlSpot(0, 4),
-                            const FlSpot(1, 4),
-                            const FlSpot(2, 4),
-                            const FlSpot(3, 7),
-                            const FlSpot(4, 6),
-                            const FlSpot(5, 7),
-                            const FlSpot(6, 8),
-                          ],
-                          isCurved: true,
-                          color: Colors.green,
-                          dotData: const FlDotData(show: false),
-                          belowBarData: BarAreaData(
-                              show: true, color: Colors.green.withOpacity(0.1)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildWeeksText("Mon"),
-                  _buildWeeksText("Tue"),
-                  _buildWeeksText("Wed"),
-                  _buildWeeksText("Thu"),
-                  _buildWeeksText("Fri"),
-                  _buildWeeksText("Sat"),
-                  _buildWeeksText("Sun"),
-                ],
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   _buildBody(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
@@ -362,7 +292,7 @@ class HomePage extends StatelessWidget {
           const SizedBox(
             height: 8,
           ),
-          _buildChart(),
+          DynamicChart(),
           const SizedBox(
             height: 8,
           ),
@@ -372,18 +302,6 @@ class HomePage extends StatelessWidget {
           ),
           _buildServicesGrid(context),
         ],
-      ),
-    );
-  }
-
-  _buildWeeksText(String weekDay) {
-    return Expanded(
-      child: Text(
-        weekDay,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
       ),
     );
   }
@@ -408,7 +326,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Omborga mahsulot kiritish",
-          const AddProductPage(),
+          const SearchAddressPage(),
         ),
         _serviceButton(
           context,
@@ -417,7 +335,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "ombordagi mahsulotni chiqarish",
-          const AddProductPage(),
+          const RemoveProductPage(),
         ),
         _serviceButton(
           context,
@@ -426,7 +344,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Omborda mavjud mahsulotlar",
-          const AddProductPage(),
+          const ProductsPage(),
         ),
         _serviceButton(
           context,
@@ -435,7 +353,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Yaroqsiz mahsulotlar",
-          const AddProductPage(),
+          const DefectsPage(),
         ),
         _serviceButton(
           context,
@@ -444,7 +362,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Kirim chiqim tarixi",
-          const AddProductPage(),
+          const HistoryPage(),
         ),
         _serviceButton(
           context,
@@ -453,7 +371,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Hodimlarni tayinlash",
-          const AddProductPage(),
+          const ConfirmEmployeesPage(),
         ),
         _serviceButton(
           context,
@@ -462,7 +380,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "KPI amallari",
-          const AddProductPage(),
+          const KPIPage(),
         ),
         _serviceButton(
           context,
@@ -471,7 +389,7 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
           "Mahsulotlarni tasdiqlash",
-          const AddProductPage(),
+          const ConfirmProductsPage(),
         ),
       ],
     );

@@ -40,6 +40,8 @@ dependencies:
   equatable: ^2.0.5
   fl_chart: ^0.63.0
   image_picker: ^1.0.4
+  marquee: ^2.2.3
+  fluttertoast: ^8.2.2
 
 dev_dependencies:
   flutter_test:
