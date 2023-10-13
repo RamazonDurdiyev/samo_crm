@@ -8,6 +8,9 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     on<ChangeTabEvent>((event, emit) async {
       await _changeTab(emit, event.value);
     });
+    on<TryToExpandEvent>((event, emit) async {
+      await _tryToExpand(emit,event.index);
+    });
   }
 
   // Controllers
@@ -17,6 +20,7 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
   // Data
 
   int currentIndexOfTab = 0;
+  List isExpandedItems = List.filled(20,false);
 
   _changeTab(Emitter<AddProductState> emit, int value) async {
     try {
@@ -25,6 +29,16 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
       emit(ChangeTabState(state: State.loaded));
     } catch (e) {
       emit(ChangeTabState(state: State.error));
+    }
+  }
+
+  _tryToExpand(Emitter<AddProductState> emit,int index) {
+    try {
+      emit(TryToExpandState(state: State.loading));
+      isExpandedItems[index] = !isExpandedItems[index];
+      emit(TryToExpandState(state: State.loaded));
+    } catch (e) {
+      emit(TryToExpandState(state: State.error));
     }
   }
 }

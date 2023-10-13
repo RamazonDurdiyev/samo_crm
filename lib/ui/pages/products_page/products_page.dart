@@ -22,53 +22,101 @@ class ProductsPage extends StatelessWidget {
       elevation: 0,
       automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
-      title: const Text(
-        "Mahsulotlar",
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
+      title: _buildSearchTextField(),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(
+            right: 8,
+          ),
+          child: GestureDetector(
+            onTap: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) {
+              //       return const NotificationPage();
+              //     },
+              //   ),
+              // );
+            },
+            child: const Icon(
+              Icons.shopping_cart_outlined,
+              color: Colors.indigo,
+              size: 28,
+            ),
+          ),
         ),
-      ),
+      ],
+      leadingWidth: 32,
       leading: GestureDetector(
         onTap: () {
           Navigator.pop(context);
         },
-        child: const Icon(
-          Icons.arrow_back,
-          size: 28,
-          color: Colors.indigo,
+        child: const Padding(
+          padding: EdgeInsets.only(left: 8),
+          child: Icon(
+            Icons.arrow_back,
+            size: 28,
+            color: Colors.indigo,
+          ),
         ),
       ),
       bottom: PreferredSize(
-        preferredSize: const Size(double.infinity, 0),
+        preferredSize: const Size(double.infinity, 44),
         child: Column(
           children: [
             _buildCustomDivider(),
+            const SizedBox(
+              height: 8,
+            ),
+            _buildFilterTab(bloc),
           ],
         ),
       ),
     );
   }
 
-  _buildBody(ProductsBloc bloc) {
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 56,
-              ),
-              _buildListView(bloc),
-            ],
+  _buildSearchTextField() {
+    return SizedBox(
+      height: 40,
+      child: TextField(
+        controller: TextEditingController(),
+        cursorColor: Colors.indigo,
+        style: const TextStyle(color: Colors.black),
+        decoration: const InputDecoration(
+          suffixIcon: Icon(
+            Icons.search,
+            color: Colors.indigo,
           ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16),
+          hintText: "Qidirish...",
+          hintStyle:
+              TextStyle(color: Colors.grey, fontSize: 16, fontFamily: "Lato"),
+          fillColor: Color.fromARGB(255, 236, 234, 234),
+          filled: true,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(16),
+              ),
+              borderSide: BorderSide.none),
         ),
-        const SizedBox(
-          height: 8,
-        ),
-        _buildFilterTab(bloc),
-      ],
+      ),
+    );
+  }
+
+  _buildBody(ProductsBloc bloc) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 8,
+          ),
+          _buildListView(bloc),
+          const SizedBox(
+            height: 8,
+          ),
+        ],
+      ),
     );
   }
 
@@ -81,52 +129,57 @@ class ProductsPage extends StatelessWidget {
 
   _buildFilterTab(ProductsBloc bloc) {
     return DefaultTabController(
-      length: 2,
+      length: 6,
       initialIndex: bloc.currentIndex,
-      child: Container(
-        margin: const EdgeInsets.only(right: 70, left: 70, top: 8),
-        height: 40,
-        decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 236, 234, 234),
+      child: TabBar(
+        padding: const EdgeInsets.only(left: 16),
+        isScrollable: true,
+        splashBorderRadius: const BorderRadius.all(
+          Radius.circular(
+            100,
+          ),
+        ),
+        unselectedLabelColor: Colors.grey,
+        labelColor: Colors.white,
+        indicator: const BoxDecoration(
           borderRadius: BorderRadius.all(
             Radius.circular(
               100,
             ),
           ),
+          color: Colors.indigo,
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
-          child: TabBar(
-            overlayColor: const MaterialStatePropertyAll(
-              Colors.transparent,
-            ),
-            unselectedLabelColor: Colors.black38,
-            labelColor: Colors.white,
-            indicator: const BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(
-                  100,
-                ),
-              ),
-              color: Colors.indigo,
-            ),
-            onTap: (value) {
-              bloc.add(
-                ChangeProductsTabEvent(value: value),
-              );
-            },
-            tabs: const [
-              Tab(
-                height: 35,
-                text: "Tayyor",
-              ),
-              Tab(
-                height: 35,
-                text: "Qismlar",
-              ),
-            ],
+        onTap: (value) {
+          bloc.add(
+            ChangeProductsTabEvent(value: value),
+          );
+        },
+        tabs: const [
+          Tab(
+            height: 35,
+            text: "All",
           ),
-        ),
+          Tab(
+            height: 35,
+            text: "Tayyor",
+          ),
+          Tab(
+            height: 35,
+            text: "Qismlar",
+          ),
+          Tab(
+            height: 35,
+            text: "PC",
+          ),
+          Tab(
+            height: 35,
+            text: "Tablet",
+          ),
+          Tab(
+            height: 35,
+            text: "Phone",
+          ),
+        ],
       ),
     );
   }

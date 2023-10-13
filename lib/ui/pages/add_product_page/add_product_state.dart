@@ -15,4 +15,12 @@ class ChangeTabState extends AddProductState {
   List<Object?> get props => [state];
 }
 
+class TryToExpandState extends AddProductState {
+  final State state;
+
+  TryToExpandState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
 enum State { initial, loading, loaded, error }

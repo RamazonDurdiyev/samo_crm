@@ -12,7 +12,15 @@ class ChangeRemoveTabState extends RemoveProductState {
 
   ChangeRemoveTabState({required this.state});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [state];
+}
+
+class TryToExpandRemovePageState extends RemoveProductState {
+  final State state;
+
+  TryToExpandRemovePageState({required this.state});
+  @override
+  List<Object?> get props => [state];
 }
 
 enum State {

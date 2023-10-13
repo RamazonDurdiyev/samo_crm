@@ -8,6 +8,9 @@ class RemoveProductBloc extends Bloc<RemoveProductEvent, RemoveProductState> {
     on<ChangeRemoveTabEvent>((event, emit) async {
       await changeTab(emit, event.value);
     });
+    on<TryToExpandRemovePageEvent>((event, emit) async {
+      await _tryToExpand(emit, event.index);
+    });
   }
 
   // Controllers
@@ -17,6 +20,7 @@ class RemoveProductBloc extends Bloc<RemoveProductEvent, RemoveProductState> {
   // Data
 
   int currentIndexOfTab = 0;
+  List isExpandedItems = List.filled(20, false);
 
   changeTab(Emitter<RemoveProductState> emit, int value) {
     try {
@@ -25,6 +29,16 @@ class RemoveProductBloc extends Bloc<RemoveProductEvent, RemoveProductState> {
       emit(ChangeRemoveTabState(state: State.loaded));
     } catch (e) {
       emit(ChangeRemoveTabState(state: State.error));
+    }
+  }
+
+  _tryToExpand(Emitter<RemoveProductState> emit, int index) {
+    try {
+      emit(TryToExpandRemovePageState(state: State.loading));
+      isExpandedItems[index] = !isExpandedItems[index];
+      emit(TryToExpandRemovePageState(state: State.loaded));
+    } catch (e) {
+      emit(TryToExpandRemovePageState(state: State.error));
     }
   }
 }

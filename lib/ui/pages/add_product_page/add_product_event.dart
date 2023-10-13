@@ -9,3 +9,11 @@ class ChangeTabEvent extends AddProductEvent {
   @override
   List<Object?> get props => [value];
 }
+
+class TryToExpandEvent extends AddProductEvent {
+  final int index;
+
+  TryToExpandEvent({required this.index});
+  @override
+  List<Object?> get props => [index];
+}
