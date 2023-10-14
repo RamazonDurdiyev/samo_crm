@@ -13,6 +13,7 @@ class StatisticsBloc extends Bloc<StatisticsEvent, StatisticsState> {
 
   int currentIndexOfTab = 0;
 
+
   _changeTabEvent(Emitter<StatisticsState> emit, int value) {
     try {
       emit(ChangeStatisticsTabState(state: State.loading));
