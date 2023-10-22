@@ -22,11 +22,19 @@ class AddEmployeePage extends StatelessWidget {
         const SizedBox(
           height: 16,
         ),
-        _buildTextField(TextEditingController(), "Phone number"),
+        _buildTextField(
+          TextEditingController(),
+          "Phone number",
+          TextInputType.phone,
+        ),
         const SizedBox(
           height: 8,
         ),
-        _buildTextField(TextEditingController(), "Password")
+        _buildTextField(
+          TextEditingController(),
+          "Password",
+          TextInputType.text,
+        )
       ],
     );
   }
@@ -46,12 +54,13 @@ class AddEmployeePage extends StatelessWidget {
     );
   }
 
-  _buildTextField(TextEditingController ctrl, String hint) {
+  _buildTextField(TextEditingController ctrl, String hint, keyType) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
         child: TextField(
           controller: ctrl,
+          keyboardType: keyType,
           cursorColor: Colors.indigo,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(

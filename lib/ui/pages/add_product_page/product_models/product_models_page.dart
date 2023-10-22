@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 
-class DefectsPage extends StatelessWidget {
-  const DefectsPage({super.key});
+class ProductModelsPage extends StatelessWidget {
+  const ProductModelsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(context),
-      floatingActionButton: _buildFloatingButton(),
-      body: _buildBody(),
+      body: _buildBody(context),
     );
   }
 
-  _buildFloatingButton() {
-    return FloatingActionButton(
-      backgroundColor: Colors.indigo,
-      onPressed: () {},
-      child: const Icon(
-        Icons.add,
-        color: Colors.white,
+  _buildBody(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 8,
+          ),
+          _buildModelsList(),
+        ],
       ),
     );
   }
@@ -29,7 +31,7 @@ class DefectsPage extends StatelessWidget {
       automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
       title: const Text(
-        "Yaroqsiz",
+        "CPU",
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -57,23 +59,6 @@ class DefectsPage extends StatelessWidget {
     );
   }
 
-  _buildBody() {
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 8,
-              ),
-              _buildListView(),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   _buildCustomDivider() {
     return Container(
       height: 1,
@@ -81,53 +66,50 @@ class DefectsPage extends StatelessWidget {
     );
   }
 
-  _buildListView() {
+  _buildModelsList() {
     return ListView.builder(
       padding: const EdgeInsets.all(0),
-      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: 4,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 12,
       itemBuilder: (context, index) {
-        return _buildListItem();
+        return _buildModel();
       },
     );
   }
 
-  _buildListItem() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 8, bottom: 2),
+  _buildModel() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: 8,
+      ),
       child: Card(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
-          ),
-        ),
         elevation: 3,
-        child: Container(
-          height: 50,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(
-              Radius.circular(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(
+              16,
             ),
           ),
-          child: const Row(
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Row(
             children: [
               SizedBox(
-                width: 16,
-              ),
-              Icon(
-                Icons.widgets_sharp,
-                 color: Colors.indigo,
-              ),
-              SizedBox(
-                width: 16,
+                width: 8,
               ),
               Text(
-                "SSD part",
+                "Core i5",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
+              ),
+              Expanded(child: SizedBox()),
+              Icon(Icons.keyboard_arrow_down),
+              SizedBox(
+                width: 8,
               ),
             ],
           ),

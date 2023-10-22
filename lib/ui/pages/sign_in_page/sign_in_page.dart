@@ -113,7 +113,7 @@ class SignInPage extends StatelessWidget {
     );
   }
 
-  _buildTextField(TextEditingController ctrl, SignInBloc bloc, String hint,
+  _buildTextField(TextEditingController ctrl, SignInBloc bloc, String hint, 
       GlobalKey<FormState> key) {
     final RegExp phoneRegExp = RegExp(r'^9\d{8}$');
     return Padding(
@@ -131,6 +131,7 @@ class SignInPage extends StatelessWidget {
               return null;
             },
             controller: ctrl,
+            keyboardType: TextInputType.phone,
             cursorColor: Colors.indigo,
             style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(

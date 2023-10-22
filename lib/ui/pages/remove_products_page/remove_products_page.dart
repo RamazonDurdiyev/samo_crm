@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:samo_crm/ui/pages/products_cart_page/products_cart_page.dart';
 import 'package:samo_crm/ui/pages/remove_products_page/remove_products_bloc.dart';
 import 'package:samo_crm/ui/pages/remove_products_page/remove_products_event.dart';
 import 'package:samo_crm/ui/pages/remove_products_page/remove_products_state.dart';
-
 
 class RemoveProductPage extends StatelessWidget {
   const RemoveProductPage({super.key});
@@ -30,14 +30,14 @@ class RemoveProductPage extends StatelessWidget {
           ),
           child: GestureDetector(
             onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) {
-              //       return const NotificationPage();
-              //     },
-              //   ),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const CartPage();
+                  },
+                ),
+              );
             },
             child: const Icon(
               Icons.shopping_cart_outlined,
@@ -225,6 +225,7 @@ class RemoveProductPage extends StatelessWidget {
                   ),
                   const Icon(
                     Icons.widgets_sharp,
+                     color: Colors.indigo,
                   ),
                   const SizedBox(
                     width: 16,

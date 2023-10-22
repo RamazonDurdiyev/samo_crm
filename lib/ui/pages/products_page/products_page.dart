@@ -19,61 +19,68 @@ class ProductsPage extends StatelessWidget {
 
   _buildAppBar(BuildContext context, ProductsBloc bloc) {
     return AppBar(
-      elevation: 0,
-      automaticallyImplyLeading: false,
-      backgroundColor: Colors.transparent,
-      title: _buildSearchTextField(),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(
-            right: 8,
-          ),
-          child: GestureDetector(
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) {
-              //       return const NotificationPage();
-              //     },
-              //   ),
-              // );
-            },
-            child: const Icon(
-              Icons.shopping_cart_outlined,
-              color: Colors.indigo,
-              size: 28,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.transparent,
+            title: _buildSearchTextField(),
+            actions: [
+              BlocBuilder<ProductsBloc,ProductsState>(
+                bloc: bloc,
+                builder: (context,state) {
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      right: 8,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) {
+                        //       return const NotificationPage();
+                        //     },
+                        //   ),
+                        // );
+                        print("cbjdh");
+                        bloc.add(FetchCategoriesEvent());
+                      },
+                      child: const Icon(
+                        Icons.shopping_cart_outlined,
+                        color: Colors.indigo,
+                        size: 28,
+                      ),
+                    ),
+                  );
+                }
+              ),
+            ],
+            leadingWidth: 32,
+            leading: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: const Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Icon(
+                  Icons.arrow_back,
+                  size: 28,
+                  color: Colors.indigo,
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
-      leadingWidth: 32,
-      leading: GestureDetector(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: const Padding(
-          padding: EdgeInsets.only(left: 8),
-          child: Icon(
-            Icons.arrow_back,
-            size: 28,
-            color: Colors.indigo,
-          ),
-        ),
-      ),
-      bottom: PreferredSize(
-        preferredSize: const Size(double.infinity, 44),
-        child: Column(
-          children: [
-            _buildCustomDivider(),
-            const SizedBox(
-              height: 8,
+            bottom: PreferredSize(
+              preferredSize: const Size(double.infinity, 44),
+              child: Column(
+                children: [
+                  _buildCustomDivider(),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  _buildFilterTab(bloc),
+                ],
+              ),
             ),
-            _buildFilterTab(bloc),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   _buildSearchTextField() {
@@ -228,6 +235,7 @@ class ProductsPage extends StatelessWidget {
               ),
               Icon(
                 Icons.widgets_sharp,
+                color: Colors.indigo,
               ),
               SizedBox(
                 width: 16,

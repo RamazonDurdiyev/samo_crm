@@ -163,19 +163,6 @@ class HomePage extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(
-              Icons.home_filled,
-              color: Colors.indigo,
-            ),
-            title: const Text(
-              'Home',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(
               Icons.settings,
               color: Colors.indigo,
             ),

@@ -30,14 +30,14 @@ class SignUpPage extends StatelessWidget {
         const SizedBox(
           height: 8,
         ),
-        _buildTextField(
+        _buildPhoneTextField(
           TextEditingController(),
           "Phone number",
         ),
         const SizedBox(
           height: 8,
         ),
-        _buildTextField(
+        _buildPasswordTextField(
           TextEditingController(),
           "Password",
         ),
@@ -128,7 +128,67 @@ class SignUpPage extends StatelessWidget {
     );
   }
 
-  _buildTextField(TextEditingController ctrl, String hint) {
+  _buildTextField(TextEditingController ctrl,String hint){
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: SizedBox(
+        child: TextField(
+          controller: ctrl,
+          cursorColor: Colors.indigo,
+          style: const TextStyle(color: Colors.black),
+          decoration: InputDecoration(
+            suffixIcon: const Icon(
+              Icons.call,
+              color: Colors.grey,
+            ),
+            hintText: hint,
+            hintStyle: const TextStyle(
+                color: Colors.grey, fontSize: 16, fontFamily: "Lato"),
+            fillColor: const Color.fromARGB(255, 236, 234, 234),
+            filled: true,
+            border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(16),
+                ),
+                borderSide: BorderSide.none),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _buildPhoneTextField(TextEditingController ctrl, String hint) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: SizedBox(
+        child: TextField(
+          controller: ctrl,
+          keyboardType: TextInputType.phone,
+          cursorColor: Colors.indigo,
+          style: const TextStyle(color: Colors.black),
+          decoration: InputDecoration(
+            suffixIcon: const Icon(
+              Icons.call,
+              color: Colors.grey,
+            ),
+            hintText: hint,
+            hintStyle: const TextStyle(
+                color: Colors.grey, fontSize: 16, fontFamily: "Lato"),
+            fillColor: const Color.fromARGB(255, 236, 234, 234),
+            filled: true,
+            border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(16),
+                ),
+                borderSide: BorderSide.none),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  _buildPasswordTextField(TextEditingController ctrl,String hint){
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(

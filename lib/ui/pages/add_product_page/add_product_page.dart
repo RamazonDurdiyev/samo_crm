@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_bloc.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
+import 'package:samo_crm/ui/pages/add_product_page/product_models/product_models_page.dart';
+import 'package:samo_crm/ui/pages/products_cart_page/products_cart_page.dart';
 
 import 'add_product_event.dart';
 
@@ -30,14 +32,14 @@ class AddProductPage extends StatelessWidget {
           ),
           child: GestureDetector(
             onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) {
-              //       return const NotificationPage();
-              //     },
-              //   ),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const CartPage();
+                  },
+                ),
+              );
             },
             child: const Icon(
               Icons.shopping_cart_outlined,
@@ -195,7 +197,7 @@ class AddProductPage extends StatelessWidget {
           itemCount: 20,
           itemBuilder: (context, index) {
             return bloc.currentIndexOfTab == 0
-                ? _buildListItemReadies(bloc, index)
+                ? _buildListItemReadies(context,bloc, index)
                 : _buildListItemParts(bloc, index);
           },
         );
@@ -225,6 +227,7 @@ class AddProductPage extends StatelessWidget {
                   ),
                   const Icon(
                     Icons.widgets_sharp,
+                    color: Colors.indigo,
                   ),
                   const SizedBox(
                     width: 16,
@@ -254,17 +257,6 @@ class AddProductPage extends StatelessWidget {
                   ),
                 ],
               ),
-              bloc.isExpandedItems[index] == true
-                  ? ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return _buildPartsChildren("Acer");
-                      },
-                    )
-                  : const SizedBox(),
             ],
           ),
         ),
@@ -272,96 +264,52 @@ class AddProductPage extends StatelessWidget {
     );
   }
 
-  _buildPartsChildren(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  _buildListItemReadies(AddProductBloc bloc, int index) {
+ 
+  _buildListItemReadies(BuildContext context,AddProductBloc bloc, int index) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 2),
-      child: Card(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return const ProductModelsPage();
+          },),);
+        },
+        child: const Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(16),
+            ),
           ),
-        ),
-        elevation: 3,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  const Icon(
-                    Icons.widgets_sharp,
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  const Text(
-                    "Monobloc",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+          elevation: 3,
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 16,
                     ),
-                  ),
-                  const Expanded(child: SizedBox()),
-                  GestureDetector(
-                    onTap: () {
-                      bloc.add(TryToExpandEvent(index: index));
-                    },
-                    child: const SizedBox(
-                      height: 30,
-                      width: 30,
-                      child: Icon(
-                        Icons.keyboard_arrow_down_rounded,
+                    Icon(
+                      Icons.widgets_sharp,
+                      color: Colors.indigo,
+                    ),
+                    SizedBox(
+                      width: 16,
+                    ),
+                    Text(
+                      "Monobloc",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                ],
-              ),
-              bloc.isExpandedItems[index] == true
-                  ? ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return _buildReadiesChildren("Acer");
-                      },
-                    )
-                  : const SizedBox(),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  _buildReadiesChildren(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samo_crm/ui/pages/profile_settings_page/profile_settings_bloc.dart';
@@ -30,7 +31,7 @@ class ProfileSettings extends StatelessWidget {
     );
   }
 
-  _buildUserImageCircle(ProfileSettingsBloc bloc) {
+  _buildUserImageCircle(BuildContext context, ProfileSettingsBloc bloc) {
     return Card(
       elevation: 5,
       shadowColor: Colors.indigo,
@@ -40,8 +41,51 @@ class ProfileSettings extends StatelessWidget {
         radius: 43,
         child: GestureDetector(
           onTap: () {
-            bloc.add(
-              PickImageEvent(),
+            showDialog(
+              context: context,
+              builder: (context) {
+                return CupertinoAlertDialog(
+                  title: const Text(
+                    "Allow gallery?",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  content: const Text(
+                    "The app needs to open gallery for images from gallery?",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  actions: [
+                    CupertinoDialogAction(
+                      onPressed: () {
+                        bloc.add(
+                          PickImageEvent(),
+                        );
+                      },
+                      child: const Text(
+                        "Yes",
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
+                    ),
+                    CupertinoDialogAction(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(
+                            color: Colors.indigo,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
+                    ),
+                  ],
+                );
+              },
             );
           },
           child: const CircleAvatar(
@@ -79,7 +123,7 @@ class ProfileSettings extends StatelessWidget {
               const SizedBox(
                 height: 32,
               ),
-              _buildUserImageCircle(bloc),
+              _buildUserImageCircle(context, bloc),
               const SizedBox(
                 height: 16,
               ),
@@ -91,7 +135,7 @@ class ProfileSettings extends StatelessWidget {
               const SizedBox(
                 height: 8,
               ),
-              _buildTextField(TextEditingController(), "Full name"),
+              _buildTextField(TextEditingController(), "Full name",TextInputType.text,),
               const SizedBox(
                 height: 8,
               ),
@@ -103,7 +147,7 @@ class ProfileSettings extends StatelessWidget {
               const SizedBox(
                 height: 8,
               ),
-              _buildTextField(TextEditingController(), "Phone number"),
+              _buildTextField(TextEditingController(), "Phone number",TextInputType.phone,),
             ],
           ),
         );
@@ -111,10 +155,11 @@ class ProfileSettings extends StatelessWidget {
     );
   }
 
-  _buildTextField(TextEditingController ctrl, String hint) {
+  _buildTextField(TextEditingController ctrl, String hint,keyType) {
     return SizedBox(
       child: TextField(
         controller: ctrl,
+        keyboardType: keyType,
         cursorColor: Colors.indigo,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(

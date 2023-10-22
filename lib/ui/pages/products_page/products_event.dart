@@ -10,3 +10,8 @@ class ChangeProductsTabEvent extends ProductsEvent {
   @override
   List<Object?> get props => [value];
 }
+
+class FetchCategoriesEvent extends ProductsEvent{
+  @override
+  List<Object?> get props => [];
+}

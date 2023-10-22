@@ -16,4 +16,12 @@ class ChangeProductsTabState extends ProductsState{
   List<Object?> get props => [state];
 }
 
+class FetchCategoriesState extends ProductsState{
+  final State state;
+
+  FetchCategoriesState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
 enum State{initial,loading,loaded,error}
