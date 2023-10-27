@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_bloc.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
@@ -13,6 +13,7 @@ class AddProductPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = AddProductBloc();
+    bloc.add(AddFetchCategoriesEvent());
     return Scaffold(
       appBar: _buildAppBar(context, bloc),
       body: _buildBody(bloc),
@@ -130,59 +131,47 @@ class AddProductPage extends StatelessWidget {
   }
 
   _buildFilterTab(AddProductBloc bloc) {
-    return DefaultTabController(
-      length: 6,
-      initialIndex: bloc.currentIndexOfTab,
-      child: TabBar(
-        padding: const EdgeInsets.only(left: 16),
-        isScrollable: true,
-        splashBorderRadius: const BorderRadius.all(
-          Radius.circular(
-            100,
-          ),
-        ),
-        unselectedLabelColor: Colors.grey,
-        labelColor: Colors.white,
-        indicator: const BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(
-              100,
-            ),
-          ),
-          color: Colors.indigo,
-        ),
-        onTap: (value) {
-          bloc.add(
-            ChangeTabEvent(value: value),
-          );
-        },
-        tabs: const [
-          Tab(
-            height: 35,
-            text: "All",
-          ),
-          Tab(
-            height: 35,
-            text: "Tayyor",
-          ),
-          Tab(
-            height: 35,
-            text: "Qismlar",
-          ),
-          Tab(
-            height: 35,
-            text: "PC",
-          ),
-          Tab(
-            height: 35,
-            text: "Tablet",
-          ),
-          Tab(
-            height: 35,
-            text: "Phone",
-          ),
-        ],
-      ),
+    return BlocBuilder<AddProductBloc, AddProductState>(
+      bloc: bloc,
+      builder: (context, state) {
+        final isloading =
+            state is AddFetchCategoriesState && state.state == State.loading;
+        return DefaultTabController(
+          length: bloc.categoriesList.length,
+          initialIndex: bloc.currentIndexOfTab,
+          child: TabBar(
+              padding: const EdgeInsets.only(left: 16),
+              isScrollable: true,
+              splashBorderRadius: const BorderRadius.all(
+                Radius.circular(
+                  100,
+                ),
+              ),
+              unselectedLabelColor: Colors.grey,
+              labelColor: Colors.white,
+              indicator: const BoxDecoration(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    100,
+                  ),
+                ),
+                color: Colors.indigo,
+              ),
+              onTap: (value) {
+                bloc.add(
+                  ChangeTabEvent(value: value),
+                );
+              },
+              tabs: bloc.categoriesList
+                  .map(
+                    (e) => Tab(
+                      height: 35,
+                      text: isloading ? "" : e.name,
+                    ),
+                  )
+                  .toList()),
+        );
+      },
     );
   }
 
@@ -190,122 +179,77 @@ class AddProductPage extends StatelessWidget {
     return BlocBuilder<AddProductBloc, AddProductState>(
       bloc: bloc,
       builder: (context, state) {
-        return ListView.builder(
-          padding: const EdgeInsets.all(0),
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: 20,
-          itemBuilder: (context, index) {
-            return bloc.currentIndexOfTab == 0
-                ? _buildListItemReadies(context,bloc, index)
-                : _buildListItemParts(bloc, index);
-          },
-        );
+        final isloading =
+            state is AddFetchCategoriesState && state.state == State.loading;
+        return bloc.currentIndexOfTab >= 0 &&
+                bloc.currentIndexOfTab < bloc.categoriesList.length
+            ? ListView.builder(
+                padding: const EdgeInsets.all(0),
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: isloading
+                    ? 0
+                    : bloc.categoriesList[bloc.currentIndexOfTab].children
+                            ?.length ??
+                        0,
+                itemBuilder: (context, index) {
+                  return _buildListItem(context, bloc, index, isloading);
+                },
+              )
+            : const SizedBox();
       },
     );
   }
 
-  _buildListItemParts(AddProductBloc bloc, int index) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 8, bottom: 2),
-      child: Card(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
-          ),
-        ),
-        elevation: 3,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  const Icon(
-                    Icons.widgets_sharp,
-                    color: Colors.indigo,
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  const Text(
-                    "SSD part",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Expanded(child: SizedBox()),
-                  GestureDetector(
-                    onTap: () {
-                      bloc.add(TryToExpandEvent(index: index));
-                    },
-                    child: const SizedBox(
-                      height: 30,
-                      width: 30,
-                      child: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
- 
-  _buildListItemReadies(BuildContext context,AddProductBloc bloc, int index) {
+  _buildListItem(
+      BuildContext context, AddProductBloc bloc, int index, bool isloading) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 2),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const ProductModelsPage();
-          },),);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return const ProductModelsPage();
+              },
+            ),
+          );
         },
-        child: const Card(
-          shape: RoundedRectangleBorder(
+        child: Card(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(16),
             ),
           ),
           elevation: 3,
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.symmetric(
+              vertical: 8,
+            ),
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 16,
-                    ),
-                    Icon(
-                      Icons.widgets_sharp,
-                      color: Colors.indigo,
-                    ),
-                    SizedBox(
-                      width: 16,
-                    ),
-                    Text(
-                      "Monobloc",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                const SizedBox(
+                  width: 16,
+                ),
+                const Icon(
+                  Icons.widgets_sharp,
+                  color: Colors.indigo,
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                Text(
+                  isloading
+                      ? ""
+                      : bloc.categoriesList[bloc.currentIndexOfTab]
+                              .children?[index]["name"]
+                              .toString() ??
+                          "",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),

@@ -23,4 +23,28 @@ class TryToExpandState extends AddProductState {
   List<Object?> get props => [state];
 }
 
+class AddFetchCategoriesState extends AddProductState {
+  final State state;
+
+  AddFetchCategoriesState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
+class FetchCategoryByIdState extends AddProductState{
+  final State state;
+
+  FetchCategoryByIdState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
+class SaveLocalToCartState extends AddProductState {
+  final State state;
+
+  SaveLocalToCartState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
 enum State { initial, loading, loaded, error }

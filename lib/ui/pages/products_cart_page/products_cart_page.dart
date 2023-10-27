@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:samo_crm/models/category_model/category_model.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_page.dart';
 import 'package:samo_crm/ui/pages/products_cart_page/products_cart_state.dart';
 
@@ -12,6 +15,7 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = ProductsCartBloc();
+    bloc.add(GetLocalProductsEvent());
     return Scaffold(
       appBar: _buildAppBar(context),
       body: _buildBody(bloc),
@@ -139,7 +143,7 @@ class CartPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
           ),
-          itemCount: 10,
+          itemCount: bloc.localProducts.length,
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
@@ -194,17 +198,22 @@ class CartPage extends StatelessWidget {
                 const SizedBox(
                   width: 16,
                 ),
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Monobloc",
-                      style: TextStyle(
+                      CategoryModel.fromJson(
+                            json.decode(
+                              bloc.localProducts[index],
+                            ),
+                          ).name ??
+                          "",
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
+                    const Text(
                       "700",
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),

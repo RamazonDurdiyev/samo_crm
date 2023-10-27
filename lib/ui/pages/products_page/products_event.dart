@@ -15,3 +15,5 @@ class FetchCategoriesEvent extends ProductsEvent{
   @override
   List<Object?> get props => [];
 }
+
+

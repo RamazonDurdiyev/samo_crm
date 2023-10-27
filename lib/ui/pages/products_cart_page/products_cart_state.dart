@@ -15,5 +15,13 @@ class TryToExpandState extends ProductsCartState {
   List<Object?> get props => [state];
 }
 
+class GetLocalProductsState extends ProductsCartState{
+  final State state;
+
+  GetLocalProductsState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
 
 enum State {initial,loading,loaded,error}

@@ -9,3 +9,8 @@ class TryToExpandEvent extends ProductsCartEvent {
   @override
   List<Object?> get props => [index];
 }
+
+class GetLocalProductsEvent extends ProductsCartEvent{
+  @override
+  List<Object?> get props => [];
+}

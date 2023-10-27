@@ -3,7 +3,7 @@ part 'category_model.g.dart';
 
 @JsonSerializable()
 class CategoryModel {
-  final String? id;
+  final int? id;
   final String? name;
   final String? imageUrl;
   final List? children;
