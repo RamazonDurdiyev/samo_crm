@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:samo_crm/core/app_const/app_const.dart';
 import 'package:samo_crm/models/category_model/category_model.dart';
+import 'package:samo_crm/models/product_model/product_model.dart';
 
 class CategoryRepo {
   // final NetworkInfo networkInfo;
@@ -36,7 +37,7 @@ class CategoryRepo {
 //// ************** Fetch Category By Id ************* ////
 ///////////////////////////////////////////////////////////
 
-Future <CategoryModel> fetchCategoryById(int id) async {
+Future <List<ProductModel>> fetchCategoryById(int id) async {
     // if (await networkInfo.isConnected) {
       final res = await client.get(
         "$GET_CATEGORY_BY_ID_API$id",
@@ -47,8 +48,11 @@ Future <CategoryModel> fetchCategoryById(int id) async {
       if (kDebugMode) {
         print("fetchCategories data => $res");
       }
-      final category = CategoryModel.fromJson(res.data["data"]);
-      return category;
+      return res.data["data"].map<ProductModel>(
+        (product) {
+          return ProductModel.fromJson(product);
+        },
+      ).toList();
     // } else {
     //   throw NetworkException();
     // }

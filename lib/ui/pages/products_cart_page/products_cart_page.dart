@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:samo_crm/models/category_model/category_model.dart';
+import 'package:samo_crm/models/product_model/product_model.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_page.dart';
 import 'package:samo_crm/ui/pages/products_cart_page/products_cart_state.dart';
 
@@ -47,32 +47,11 @@ class CartPage extends StatelessWidget {
           const SizedBox(
             height: 8,
           ),
-          _buildTextSeparate("Tayyor"),
-          _buildListReadies(bloc),
+          _buildProductsList(bloc),
           const SizedBox(
             height: 8,
           ),
-          _buildTextSeparate("Qismlar"),
-          const SizedBox(
-            height: 8,
-          ),
-          _buildListParts(bloc),
         ],
-      ),
-    );
-  }
-
-  _buildTextSeparate(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
       ),
     );
   }
@@ -135,134 +114,33 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  _buildListReadies(ProductsCartBloc bloc) {
+  _buildProductsList(ProductsCartBloc bloc) {
     return BlocBuilder<ProductsCartBloc, ProductsCartState>(
       bloc: bloc,
       builder: (context, state) {
+        final isLoading =
+            state is GetLocalProductsState && state.state == State.loading;
         return ListView.builder(
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
           ),
-          itemCount: bloc.localProducts.length,
+          itemCount: isLoading ? 0 : bloc.localProducts.length,
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            return _buildListItemReadies(bloc, index);
+            return _buildProductsItem(bloc, index,isLoading);
           },
         );
       },
     );
   }
 
-  _buildListParts(ProductsCartBloc bloc) {
-    return BlocBuilder<ProductsCartBloc, ProductsCartState>(
-      bloc: bloc,
-      builder: (context, state) {
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 8,
-          ),
-          itemCount: 10,
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return _buildListItemParts(bloc, index);
-          },
-        );
-      },
-    );
-  }
-
-  _buildListItemReadies(ProductsCartBloc bloc, int index) {
-    return Card(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(
-          Radius.circular(16),
-        ),
-      ),
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const SizedBox(
-                  width: 16,
-                ),
-                const Icon(
-                  Icons.widgets_sharp,
-                  color: Colors.indigo,
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      CategoryModel.fromJson(
-                            json.decode(
-                              bloc.localProducts[index],
-                            ),
-                          ).name ??
-                          "",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Text(
-                      "700",
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                const Expanded(child: SizedBox()),
-                const Text(
-                  "120",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    bloc.add(TryToExpandEvent(index: index));
-                  },
-                  child: const SizedBox(
-                    height: 30,
-                    width: 30,
-                    child: Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      color: Colors.indigo,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-              ],
-            ),
-            bloc.isItemExpanded[index] == true
-                ? ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: 5,
-                    itemBuilder: (context, index) {
-                      return _buildReadiesChildren(context, bloc, "Acer");
-                    },
-                  )
-                : const SizedBox(),
-          ],
-        ),
+  _buildProductsItem(ProductsCartBloc bloc, int parentIndex, bool isLoading) {
+    final product = ProductItemModel.fromJson(
+      json.decode(
+        bloc.localProducts[parentIndex],
       ),
     );
-  }
-
-  _buildListItemParts(ProductsCartBloc bloc, int index) {
     return Card(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
@@ -291,21 +169,21 @@ class CartPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "CPU",
+                      "Need to fill",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      "240 \$",
+                      "700 \$",
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],
                 ),
                 const Expanded(child: SizedBox()),
                 const Text(
-                  "50",
+                  "120",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -313,7 +191,7 @@ class CartPage extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    bloc.add(TryToExpandEvent(index: index));
+                    bloc.add(TryToExpandEvent(index: parentIndex));
                   },
                   child: const SizedBox(
                     height: 30,
@@ -329,14 +207,15 @@ class CartPage extends StatelessWidget {
                 ),
               ],
             ),
-            bloc.isItemExpanded[index] == true
+            bloc.isItemExpanded[parentIndex] == true
                 ? ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: 5,
+                    itemCount: isLoading ? 0 : bloc.localProducts.length,
                     itemBuilder: (context, index) {
-                      return _buildPartsChildren(context, bloc, "core i5");
+                      return _buildProductsChild(
+                          context, bloc, product.name ?? "");
                     },
                   )
                 : const SizedBox(),
@@ -346,57 +225,7 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  _buildReadiesChildren(
-      BuildContext context, ProductsCartBloc bloc, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const Expanded(child: SizedBox()),
-          InkWell(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(
-                          16,
-                        ),
-                      ),
-                    ),
-                    title: const Text(
-                      "Tahrirlash",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    content: _buildTextField(bloc.countCtrl, "Sonini kiriting"),
-                  );
-                },
-              );
-            },
-            child: const Icon(
-              Icons.edit,
-              size: 16,
-              color: Colors.indigo,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  _buildPartsChildren(
+  _buildProductsChild(
       BuildContext context, ProductsCartBloc bloc, String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),

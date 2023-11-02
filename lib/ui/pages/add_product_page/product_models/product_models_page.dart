@@ -1,16 +1,24 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_bloc.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_event.dart';
+import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
 
 class ProductModelsPage extends StatelessWidget {
   const ProductModelsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final bloc = AddProductBloc();
+    bloc.add(
+      FetchCategoryByIdEvent(
+        id: args["id"],
+      ),
+    );
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: _buildAppBar(context, bloc, args),
       body: _buildBody(context, bloc),
     );
   }
@@ -29,18 +37,23 @@ class ProductModelsPage extends StatelessWidget {
     );
   }
 
-  _buildAppBar(BuildContext context) {
+  _buildAppBar(BuildContext context, AddProductBloc bloc, Map args) {
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
-      title: const Text(
-        "CPU",
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
+      title: BlocBuilder<AddProductBloc, AddProductState>(
+        bloc: bloc,
+        builder: (context, state) {
+          return Text(
+            args["category_item_name"],
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          );
+        },
       ),
       leading: GestureDetector(
         onTap: () {
@@ -74,20 +87,22 @@ class ProductModelsPage extends StatelessWidget {
     return BlocBuilder(
       bloc: bloc,
       builder: (context, state) {
+        final isLoading =
+            state is FetchCategoryByIdState && state.state == State.loading;
         return ListView.builder(
           padding: const EdgeInsets.all(0),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: 12,
+          itemCount: isLoading ? 0 : bloc.productsById.length,
           itemBuilder: (context, index) {
-            return _buildModel(bloc, index);
+            return _buildModel(bloc, index, isLoading);
           },
         );
       },
     );
   }
 
-  _buildModel(AddProductBloc bloc, int index) {
+  _buildModel(AddProductBloc bloc, int index, bool isLoading) {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 8,
@@ -110,9 +125,9 @@ class ProductModelsPage extends StatelessWidget {
                   const SizedBox(
                     width: 8,
                   ),
-                  const Text(
-                    "Core i5",
-                    style: TextStyle(
+                  Text(
+                    bloc.productsById[index].name ?? "",
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -144,7 +159,7 @@ class ProductModelsPage extends StatelessWidget {
               ),
             ),
             bloc.isExpandedItems[index] == true
-                ? _buildModelChildList()
+                ? _buildModelChildList(bloc, index, isLoading)
                 : const SizedBox(),
           ],
         ),
@@ -152,24 +167,37 @@ class ProductModelsPage extends StatelessWidget {
     );
   }
 
-  _buildModelChildList() {
+  _buildModelChildList(AddProductBloc bloc, int parentIndex, bool isLoading) {
     return ListView.builder(
-      itemCount: 5,
       shrinkWrap: true,
       padding: const EdgeInsets.all(8),
       physics: const NeverScrollableScrollPhysics(),
+      itemCount:
+          isLoading ? 0 : bloc.productsById[parentIndex].children?.length,
       itemBuilder: (context, index) {
-        return _buildModelChild();
+        return _buildModelChild(bloc, parentIndex, index, isLoading);
       },
     );
   }
 
-  _buildModelChild() {
-    return const Text(
-      "i5 10",
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
+  _buildModelChild(
+      AddProductBloc bloc, int parentIndex, int index, bool isLoading) {
+    return InkWell(
+      onLongPress: () {
+        if (bloc.productsById[parentIndex].children?[index] != null) {
+          bloc.add(
+            SaveLocalToCartEvent(
+              product: bloc.productsById[parentIndex].children![index],
+            ),
+          );
+        }
+      },
+      child: Text(
+        bloc.productsById[parentIndex].children?[index].name ?? "",
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

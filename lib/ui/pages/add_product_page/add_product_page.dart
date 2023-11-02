@@ -189,7 +189,7 @@ class AddProductPage extends StatelessWidget {
                 shrinkWrap: true,
                 itemCount: isloading
                     ? 0
-                    : bloc.categoriesList[bloc.currentIndexOfTab].children
+                    : bloc.categoriesList[bloc.currentIndexOfTab].categoryItems
                             ?.length ??
                         0,
                 itemBuilder: (context, index) {
@@ -213,6 +213,14 @@ class AddProductPage extends StatelessWidget {
               builder: (context) {
                 return const ProductModelsPage();
               },
+              settings: RouteSettings(
+                arguments: 
+                  {
+                    "id": bloc.categoriesList[index].id,
+                    "category_item_name":bloc.categoriesList[bloc.currentIndexOfTab].categoryItems?[index].name,
+                  },
+                
+              ),
             ),
           );
         },
@@ -243,7 +251,7 @@ class AddProductPage extends StatelessWidget {
                   isloading
                       ? ""
                       : bloc.categoriesList[bloc.currentIndexOfTab]
-                              .children?[index]["name"]
+                              .categoryItems?[index].name
                               .toString() ??
                           "",
                   style: const TextStyle(

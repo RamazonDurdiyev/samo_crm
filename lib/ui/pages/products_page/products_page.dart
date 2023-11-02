@@ -187,7 +187,7 @@ class ProductsPage extends StatelessWidget {
           padding: const EdgeInsets.all(0),
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: isLoading ? 0 : bloc.categoriesList[bloc.currentIndex].children?.length ?? 0,
+          itemCount: isLoading ? 0 : bloc.categoriesList[bloc.currentIndex].categoryItems?.length ?? 0,
           itemBuilder: (context, index) {
             return _buildListItems(bloc, index);
           },
@@ -198,7 +198,7 @@ class ProductsPage extends StatelessWidget {
 
   _buildListItems(ProductsBloc bloc, int index) {
   final itemName = bloc
-            .categoriesList[bloc.currentIndex].children?[index]["name"]
+            .categoriesList[bloc.currentIndex].categoryItems?[index].name
             .toString() ??
         "";
     return Padding(

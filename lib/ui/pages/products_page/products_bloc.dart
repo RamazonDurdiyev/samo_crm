@@ -41,7 +41,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     } catch (e) {
       emit(FetchCategoriesState(state: State.error));
       if (kDebugMode) {
-        print("error fetch category => $e");
+        print("ProductsBloc _fetchCategories error => $e");
       }
     }
   }

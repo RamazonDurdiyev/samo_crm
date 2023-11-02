@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:samo_crm/models/category_item_model/category_item_model.dart';
 import 'package:samo_crm/models/category_model/category_model.dart';
+import 'package:samo_crm/models/product_model/product_model.dart';
 import 'package:samo_crm/repo/category_repo/category_repo.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_event.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
@@ -37,10 +37,9 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
   CategoryRepo repo = CategoryRepo();
   List<CategoryModel> categoriesList = [];
   List<String> localProducts = [];
-  CategoryModel categoryById = CategoryModel();
-  CategoryItemModel categoryItem = CategoryItemModel();
+  List<ProductModel> productsById = [];
   int currentIndexOfTab = 0;
-  List isExpandedItems = List.filled(20, false);
+  List<bool> isExpandedItems = List.filled(1000, false);
 
   _changeTab(Emitter<AddProductState> emit, int value) async {
     try {
@@ -65,8 +64,8 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
   _fetchCategories(Emitter<AddProductState> emit) async {
     try {
       emit(AddFetchCategoriesState(state: State.loading));
-      final res = await repo.fetchCategories();
-      categoriesList = res;
+      categoriesList = await repo.fetchCategories();
+
       if (kDebugMode) {
         print(
             "AddProductBloc _fetchCategories categoriesList => $categoriesList");
@@ -80,7 +79,7 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     }
   }
 
-  _saveLocalToCart(Emitter<AddProductState> emit, CategoryModel product) async {
+  _saveLocalToCart(Emitter<AddProductState> emit, ProductItemModel product) async {
     try {
       emit(SaveLocalToCartState(state: State.loading));
       final prefs = await SharedPreferences.getInstance();
@@ -105,9 +104,17 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
   _fetchCategoryById(Emitter<AddProductState> emit, int id) async {
     try {
       emit(FetchCategoryByIdState(state: State.loading));
-      categoryById = await repo.fetchCategoryById(id);
-     
+      productsById = await repo.fetchCategoryById(id);
+      if (kDebugMode) {
+        print(
+            "AddProductBloc _fetchCategoryById categoryById products => $productsById");
+      }
       emit(FetchCategoryByIdState(state: State.loaded));
-    } catch (e) {}
+    } catch (e) {
+      emit(FetchCategoryByIdState(state: State.error));
+      if (kDebugMode) {
+        print("AddProductBloc _fetchCategoryById error => $e");
+      }
+    }
   }
 }

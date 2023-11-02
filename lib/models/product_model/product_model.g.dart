@@ -1,37 +1,36 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'category_model.dart';
+part of 'product_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-CategoryModel _$CategoryModelFromJson(Map<String, dynamic> json) =>
-    CategoryModel(
+ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
       id: json['id'] as int?,
       name: json['name'] as String?,
       imageUrl: json['imageUrl'] as String?,
-      categoryItems: (json['children'] as List<dynamic>?)
-          ?.map((e) => CategoryItemModel.fromJson(e as Map<String, dynamic>))
+      children: (json['children'] as List<dynamic>?)
+          ?.map((e) => ProductItemModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$CategoryModelToJson(CategoryModel instance) =>
+Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'imageUrl': instance.imageUrl,
-      'children': instance.categoryItems,
+      'children': instance.children,
     };
 
-CategoryItemModel _$CategoryItemModelFromJson(Map<String, dynamic> json) =>
-    CategoryItemModel(
+ProductItemModel _$ProductItemModelFromJson(Map<String, dynamic> json) =>
+    ProductItemModel(
       id: json['id'] as int?,
       name: json['name'] as String?,
       imageUrl: json['imageUrl'] as String?,
     );
 
-Map<String, dynamic> _$CategoryItemModelToJson(CategoryItemModel instance) =>
+Map<String, dynamic> _$ProductItemModelToJson(ProductItemModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

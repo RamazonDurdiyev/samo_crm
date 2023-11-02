@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:samo_crm/models/category_model/category_model.dart';
+import 'package:samo_crm/models/product_model/product_model.dart';
 
 abstract class AddProductEvent extends Equatable {}
 
@@ -33,7 +33,7 @@ class FetchCategoryByIdEvent extends AddProductEvent{
 }
 
 class SaveLocalToCartEvent extends AddProductEvent{
-  final CategoryModel product;
+  final ProductItemModel product;
 
   SaveLocalToCartEvent({required this.product});
   @override
