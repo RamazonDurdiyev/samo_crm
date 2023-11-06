@@ -36,3 +36,33 @@ Map<String, dynamic> _$ProductItemModelToJson(ProductItemModel instance) =>
       'name': instance.name,
       'imageUrl': instance.imageUrl,
     };
+
+CartProductModel _$CartProductModelFromJson(Map<String, dynamic> json) =>
+    CartProductModel(
+      categoryName: json['categoryName'] as String?,
+      name: json['name'] as String?,
+      quantity: json['quantity'] as int?,
+      price: json['price'] as int?,
+    );
+
+Map<String, dynamic> _$CartProductModelToJson(CartProductModel instance) =>
+    <String, dynamic>{
+      'categoryName': instance.categoryName,
+      'name': instance.name,
+      'quantity': instance.quantity,
+      'price': instance.price,
+    };
+
+PostProductModel _$PostProductModelFromJson(Map<String, dynamic> json) =>
+    PostProductModel(
+      productId: json['productId'] as int?,
+      quantity: json['quantity'] as int?,
+      price: json['price'] as int?,
+    );
+
+Map<String, dynamic> _$PostProductModelToJson(PostProductModel instance) =>
+    <String, dynamic>{
+      'productId': instance.productId,
+      'quantity': instance.quantity,
+      'price': instance.price,
+    };

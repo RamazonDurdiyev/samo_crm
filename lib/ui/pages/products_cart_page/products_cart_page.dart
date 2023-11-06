@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samo_crm/models/product_model/product_model.dart';
-import 'package:samo_crm/ui/pages/add_product_page/add_product_page.dart';
 import 'package:samo_crm/ui/pages/products_cart_page/products_cart_state.dart';
 
 import 'products_cart_bloc.dart';
@@ -11,47 +9,80 @@ import 'products_cart_event.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
-
   @override
   Widget build(BuildContext context) {
     final bloc = ProductsCartBloc();
     bloc.add(GetLocalProductsEvent());
     return Scaffold(
       appBar: _buildAppBar(context),
-      body: _buildBody(bloc),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.indigo,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return const AddProductPage();
-              },
-            ),
-          );
-        },
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
+      body: _buildBody(context, bloc),
+    );
+  }
+
+  _buildBody(
+    BuildContext context,
+    ProductsCartBloc bloc,
+  ) {
+    return BlocBuilder<ProductsCartBloc, ProductsCartState>(
+      bloc: bloc,
+      builder: (context, state) {
+        return bloc.localProducts.isNotEmpty
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  _buildProductsList(bloc),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  _buildConfirmButton(context),
+                ],
+              )
+            : _buildEmptyText();
+      },
+    );
+  }
+
+  _buildEmptyText() {
+    return const Center(
+      child: Text(
+        "No elements",
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
         ),
       ),
     );
   }
 
-  _buildBody(ProductsCartBloc bloc) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 8,
+  _buildConfirmButton(BuildContext context) {
+    return Container(
+      color: const Color.fromARGB(255, 236, 234, 234),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 8,
+        ),
+        child: ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(16),
+              ),
+            ),
+            backgroundColor: Colors.indigo,
+            fixedSize: const Size(
+              double.maxFinite,
+              50,
+            ),
           ),
-          _buildProductsList(bloc),
-          const SizedBox(
-            height: 8,
+          child: const Text(
+            "Tasdiqlash",
           ),
-        ],
+        ),
       ),
     );
   }
@@ -120,27 +151,24 @@ class CartPage extends StatelessWidget {
       builder: (context, state) {
         final isLoading =
             state is GetLocalProductsState && state.state == State.loading;
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 8,
+        return Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+            ),
+            itemCount: bloc.categoryNames.length,
+            itemBuilder: (context, index) {
+              return _buildProductsItem(
+                  bloc, index, isLoading, bloc.categoryNames[index]);
+            },
           ),
-          itemCount: isLoading ? 0 : bloc.localProducts.length,
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return _buildProductsItem(bloc, index,isLoading);
-          },
         );
       },
     );
   }
 
-  _buildProductsItem(ProductsCartBloc bloc, int parentIndex, bool isLoading) {
-    final product = ProductItemModel.fromJson(
-      json.decode(
-        bloc.localProducts[parentIndex],
-      ),
-    );
+  _buildProductsItem(ProductsCartBloc bloc, int parentIndex, bool isLoading,
+      String categoryName) {
     return Card(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
@@ -165,39 +193,46 @@ class CartPage extends StatelessWidget {
                 const SizedBox(
                   width: 16,
                 ),
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Need to fill",
-                      style: TextStyle(
+                      categoryName,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
-                      "700 \$",
+                    const Text(
+                      "",
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],
                 ),
                 const Expanded(child: SizedBox()),
                 const Text(
-                  "120",
+                  "",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                GestureDetector(
+                InkWell(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(
+                      100,
+                    ),
+                  ),
                   onTap: () {
                     bloc.add(TryToExpandEvent(index: parentIndex));
                   },
-                  child: const SizedBox(
+                  child: SizedBox(
                     height: 30,
                     width: 30,
                     child: Icon(
-                      Icons.keyboard_arrow_down_rounded,
+                      bloc.isItemExpanded[parentIndex] == false
+                          ? Icons.keyboard_arrow_down_rounded
+                          : Icons.keyboard_arrow_up,
                       color: Colors.indigo,
                     ),
                   ),
@@ -208,16 +243,7 @@ class CartPage extends StatelessWidget {
               ],
             ),
             bloc.isItemExpanded[parentIndex] == true
-                ? ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: isLoading ? 0 : bloc.localProducts.length,
-                    itemBuilder: (context, index) {
-                      return _buildProductsChild(
-                          context, bloc, product.name ?? "");
-                    },
-                  )
+                ? _buildProductsChildList(bloc, isLoading, categoryName)
                 : const SizedBox(),
           ],
         ),
@@ -225,21 +251,46 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  _buildProductsChild(
-      BuildContext context, ProductsCartBloc bloc, String text) {
+  _buildProductsChildList(
+      ProductsCartBloc bloc, bool isLoading, String categoryName) {
+        bloc.add(SortProductsEvent(
+             categoryName: categoryName));
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: bloc.sortProducts.length,
+      itemBuilder: (context, index) {
+        
+        return _buildProductsChild(context, bloc, index);
+      },
+    );
+  }
+
+  _buildProductsChild(BuildContext context, ProductsCartBloc bloc, int index) {
+    final product = CartProductModel.fromJson(
+      json.decode(
+        bloc.sortProducts[index],
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           Text(
-            text,
+            product.name.toString(),
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           const Expanded(child: SizedBox()),
           InkWell(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(
+                100,
+              ),
+            ),
             onTap: () {
               showDialog(
                 context: context,
@@ -266,8 +317,21 @@ class CartPage extends StatelessWidget {
             },
             child: const Icon(
               Icons.edit,
-              size: 16,
+              size: 18,
               color: Colors.indigo,
+            ),
+          ),
+          const SizedBox(
+            width: 8,
+          ),
+          InkWell(
+            onTap: () {
+              bloc.add(DeleteLocalProductEvent(product: product));
+            },
+            child: const Icon(
+              Icons.remove_circle,
+              color: Colors.red,
+              size: 18,
             ),
           ),
         ],

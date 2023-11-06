@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:samo_crm/core/app_const/app_const.dart';
-import 'package:samo_crm/models/post_product_model/post_product_model.dart';
+import 'package:samo_crm/models/product_model/product_model.dart';
 
 
 class CategoryRepo {

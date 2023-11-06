@@ -23,5 +23,21 @@ class GetLocalProductsState extends ProductsCartState{
   List<Object?> get props => [state];
 }
 
+class DeleteLocalProductState extends ProductsCartState{
+  final State state;
+
+  DeleteLocalProductState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
+class SortProductsState extends ProductsCartState{
+  final State state;
+
+  SortProductsState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
 
 enum State {initial,loading,loaded,error}

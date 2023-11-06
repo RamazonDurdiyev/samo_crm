@@ -38,3 +38,41 @@ class ProductItemModel {
 
   Map<String, dynamic> toJson() => _$ProductItemModelToJson(this);
 }
+
+@JsonSerializable()
+class CartProductModel {
+  final String? categoryName;
+  final String? name;
+  final int? quantity;
+  final int? price;
+
+  CartProductModel({
+    this.categoryName,
+    this.name,
+    this.quantity,
+    this.price,
+  });
+
+  factory CartProductModel.fromJson(Map<String, dynamic> data) =>
+      _$CartProductModelFromJson(data);
+
+  Map<String, dynamic> toJson() => _$CartProductModelToJson(this);
+}
+
+@JsonSerializable()
+class PostProductModel {
+  final int? productId;
+  final int? quantity;
+  final int? price;
+
+  PostProductModel({
+    this.productId,
+    this.quantity,
+    this.price,
+  });
+
+  factory PostProductModel.fromJson(Map<String, dynamic> data) =>
+      _$PostProductModelFromJson(data);
+
+  Map<String, dynamic> toJson() => _$PostProductModelToJson(this);
+}

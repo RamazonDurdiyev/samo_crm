@@ -33,7 +33,7 @@ class FetchCategoryByIdEvent extends AddProductEvent{
 }
 
 class SaveLocalToCartEvent extends AddProductEvent{
-  final ProductItemModel product;
+  final CartProductModel product;
 
   SaveLocalToCartEvent({required this.product});
   @override

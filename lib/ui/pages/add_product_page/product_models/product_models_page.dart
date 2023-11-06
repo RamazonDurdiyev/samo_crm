@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:samo_crm/models/product_model/product_model.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_bloc.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_event.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
@@ -19,11 +20,12 @@ class ProductModelsPage extends StatelessWidget {
     );
     return Scaffold(
       appBar: _buildAppBar(context, bloc, args),
-      body: _buildBody(context, bloc),
+      body: _buildBody(context, bloc, args),
     );
   }
 
-  _buildBody(BuildContext context, AddProductBloc bloc) {
+  _buildBody(
+      BuildContext context, AddProductBloc bloc, Map<String, dynamic> args) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +33,7 @@ class ProductModelsPage extends StatelessWidget {
           const SizedBox(
             height: 8,
           ),
-          _buildModelsList(bloc),
+          _buildModelsList(bloc, args),
         ],
       ),
     );
@@ -83,7 +85,7 @@ class ProductModelsPage extends StatelessWidget {
     );
   }
 
-  _buildModelsList(AddProductBloc bloc) {
+  _buildModelsList(AddProductBloc bloc, Map<String, dynamic> args) {
     return BlocBuilder(
       bloc: bloc,
       builder: (context, state) {
@@ -95,14 +97,15 @@ class ProductModelsPage extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: isLoading ? 0 : bloc.productsById.length,
           itemBuilder: (context, index) {
-            return _buildModel(bloc, index, isLoading);
+            return _buildModel(bloc, index, isLoading, args);
           },
         );
       },
     );
   }
 
-  _buildModel(AddProductBloc bloc, int index, bool isLoading) {
+  _buildModel(AddProductBloc bloc, int index, bool isLoading,
+      Map<String, dynamic> args) {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 8,
@@ -159,7 +162,7 @@ class ProductModelsPage extends StatelessWidget {
               ),
             ),
             bloc.isExpandedItems[index] == true
-                ? _buildModelChildList(bloc, index, isLoading)
+                ? _buildModelChildList(bloc, index, isLoading, args)
                 : const SizedBox(),
           ],
         ),
@@ -167,7 +170,8 @@ class ProductModelsPage extends StatelessWidget {
     );
   }
 
-  _buildModelChildList(AddProductBloc bloc, int parentIndex, bool isLoading) {
+  _buildModelChildList(AddProductBloc bloc, int parentIndex, bool isLoading,
+      Map<String, dynamic> args) {
     return ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.all(8),
@@ -175,28 +179,124 @@ class ProductModelsPage extends StatelessWidget {
       itemCount:
           isLoading ? 0 : bloc.productsById[parentIndex].children?.length,
       itemBuilder: (context, index) {
-        return _buildModelChild(bloc, parentIndex, index, isLoading);
+        return _buildModelChild(
+            context, bloc, parentIndex, index, isLoading, args);
       },
     );
   }
 
-  _buildModelChild(
-      AddProductBloc bloc, int parentIndex, int index, bool isLoading) {
+  _buildModelChild(BuildContext context, AddProductBloc bloc, int parentIndex,
+      int index, bool isLoading, Map<String, dynamic> args) {
     return InkWell(
-      onLongPress: () {
-        if (bloc.productsById[parentIndex].children?[index] != null) {
-          bloc.add(
-            SaveLocalToCartEvent(
-              product: bloc.productsById[parentIndex].children![index],
-            ),
-          );
-        }
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    16,
+                  ),
+                ),
+              ),
+              title: const Text(
+                "Tahrirlash",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTextField(bloc.countCtrl, "Sonini kiriting"),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  _buildTextField(bloc.costCtrl, "Narxini kiriting"),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (bloc.productsById[parentIndex].children?[index] !=
+                        null) {
+                      bloc.add(
+                        SaveLocalToCartEvent(
+                          product: CartProductModel(
+                            name: bloc.productsById[parentIndex]
+                                .children?[index].name,
+                            categoryName: args["category_item_name"],
+                            price: bloc.costCtrl.text.isNotEmpty 
+                            ? int.parse(
+                              bloc.costCtrl.text,
+                            ) : 0,
+                            quantity: bloc.countCtrl.text.isNotEmpty ? int.parse(
+                              bloc.countCtrl.text,
+                            ) : 0,
+                          ),
+                        ),
+                      );
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text(
+                    "Add",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.indigo,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
       },
       child: Text(
         bloc.productsById[parentIndex].children?[index].name ?? "",
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  _buildTextField(TextEditingController ctrl, String hint) {
+    return SizedBox(
+      child: TextField(
+        controller: ctrl,
+        keyboardType: TextInputType.number,
+        cursorColor: Colors.indigo,
+        style: const TextStyle(
+          color: Colors.black,
+        ),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(
+              color: Colors.grey, fontSize: 16, fontFamily: "Lato"),
+          fillColor: const Color.fromARGB(255, 236, 234, 234),
+          filled: true,
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(16),
+            ),
+            borderSide: BorderSide.none,
+          ),
         ),
       ),
     );

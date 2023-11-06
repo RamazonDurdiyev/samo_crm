@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:samo_crm/models/category_model/category_model.dart';
 import 'package:samo_crm/models/product_model/product_model.dart';
 import 'package:samo_crm/repo/category_repo/category_repo.dart';
@@ -32,6 +33,8 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
   // Controllers
 
   TextEditingController searchProductCtrl = TextEditingController();
+  TextEditingController costCtrl = TextEditingController();
+  TextEditingController countCtrl = TextEditingController();
 
   // Data
   CategoryRepo repo = CategoryRepo();
@@ -79,18 +82,29 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     }
   }
 
-  _saveLocalToCart(Emitter<AddProductState> emit, ProductItemModel product) async {
+  _saveLocalToCart(
+      Emitter<AddProductState> emit, CartProductModel product) async {
     try {
       emit(SaveLocalToCartState(state: State.loading));
       final prefs = await SharedPreferences.getInstance();
-      localProducts.add(json.encode(product.toJson()));
-      prefs.setStringList(
-        "cart_products",
-        localProducts,
-      );
-      if (kDebugMode) {
-        print(
-            "AddProductsBloc _saveLocalToCart product saved succesfully, local products => $localProducts");
+      localProducts = prefs.getStringList("cart_products") ?? [];
+      if (localProducts.contains(json.encode(product.toJson())) != true) {
+        localProducts.add(json.encode(product.toJson()));
+        prefs.setStringList(
+          "cart_products",
+          localProducts,
+        );
+         Fluttertoast.showToast(
+          msg: "Added succesfully",
+          backgroundColor: Colors.indigo,
+          textColor: Colors.white,
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: "Already exist",
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
       }
       emit(SaveLocalToCartState(state: State.loaded));
     } catch (e) {

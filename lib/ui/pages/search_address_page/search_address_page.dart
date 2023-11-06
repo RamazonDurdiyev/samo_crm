@@ -90,44 +90,39 @@ class SearchAddressPage extends StatelessWidget {
 
   _buildConfirmButton(BuildContext context) {
     return Container(
-      height: 66,
       color: const Color.fromARGB(255, 236, 234, 234),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 8,
+        ),
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return const AddProductPage();
+                },
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(16),
+              ),
             ),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return const AddProductPage();
-                    },
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(16),
-                  ),
-                ),
-                backgroundColor: Colors.indigo,
-                fixedSize: const Size(
-                  double.maxFinite,
-                  50,
-                ),
-              ),
-              child: const Text(
-                "Tasdiqlash",
-              ),
+            backgroundColor: Colors.indigo,
+            fixedSize: const Size(
+              double.maxFinite,
+              50,
             ),
           ),
-        ],
+          child: const Text(
+            "Tasdiqlash",
+          ),
+        ),
       ),
     );
   }
