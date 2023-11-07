@@ -159,7 +159,11 @@ class CartPage extends StatelessWidget {
             itemCount: bloc.categoryNames.length,
             itemBuilder: (context, index) {
               return _buildProductsItem(
-                  bloc, index, isLoading, bloc.categoryNames[index]);
+                bloc,
+                index,
+                isLoading,
+                bloc.categoryNames[index] ?? "",
+              );
             },
           ),
         );
@@ -168,7 +172,7 @@ class CartPage extends StatelessWidget {
   }
 
   _buildProductsItem(ProductsCartBloc bloc, int parentIndex, bool isLoading,
-      String categoryName) {
+      String categoryName,) {
     return Card(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
@@ -225,6 +229,7 @@ class CartPage extends StatelessWidget {
                   ),
                   onTap: () {
                     bloc.add(TryToExpandEvent(index: parentIndex));
+                    bloc.add(SortProductsEvent(categoryName: categoryName));
                   },
                   child: SizedBox(
                     height: 30,
@@ -243,7 +248,7 @@ class CartPage extends StatelessWidget {
               ],
             ),
             bloc.isItemExpanded[parentIndex] == true
-                ? _buildProductsChildList(bloc, isLoading, categoryName)
+                ? _buildProductsChildList(bloc, categoryName)
                 : const SizedBox(),
           ],
         ),
@@ -251,34 +256,30 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  _buildProductsChildList(
-      ProductsCartBloc bloc, bool isLoading, String categoryName) {
-        bloc.add(SortProductsEvent(
-             categoryName: categoryName));
+  _buildProductsChildList(ProductsCartBloc bloc, String categoryName) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: bloc.sortProducts.length,
       itemBuilder: (context, index) {
-        
-        return _buildProductsChild(context, bloc, index);
+        return _buildProductsChild(context, bloc, index, bloc.sortProducts);
       },
     );
   }
 
-  _buildProductsChild(BuildContext context, ProductsCartBloc bloc, int index) {
-    final product = CartProductModel.fromJson(
-      json.decode(
-        bloc.sortProducts[index],
-      ),
-    );
+  _buildProductsChild(
+    BuildContext context,
+    ProductsCartBloc bloc,
+    int index,
+    List<String> list,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           Text(
-            product.name.toString(),
+            CartProductModel.fromJson(json.decode(list[index])).name.toString(),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -326,7 +327,7 @@ class CartPage extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              bloc.add(DeleteLocalProductEvent(product: product));
+              // bloc.add(DeleteLocalProductEvent(product: product));
             },
             child: const Icon(
               Icons.remove_circle,

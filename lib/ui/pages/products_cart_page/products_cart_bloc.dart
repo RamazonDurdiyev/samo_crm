@@ -21,7 +21,7 @@ class ProductsCartBloc extends Bloc<ProductsCartEvent, ProductsCartState> {
       await _deleteLocalProduct(emit, event.product);
     });
     on<SortProductsEvent>((event, emit) async {
-      await _sortProducts(emit,event.categoryName);
+      await _sortProducts(emit, event.categoryName);
     });
   }
 
@@ -39,6 +39,10 @@ class ProductsCartBloc extends Bloc<ProductsCartEvent, ProductsCartState> {
   _tryToExpand(Emitter<ProductsCartState> emit, int index) {
     try {
       emit(TryToExpandState(state: State.loading));
+      List trueItems = isItemExpanded.where((element) => element == true).toList();
+      if (trueItems.length == 1 && isItemExpanded[index] != true) {
+        isItemExpanded = List.filled(20, false);
+      }
       isItemExpanded[index] = !isItemExpanded[index];
       emit(TryToExpandState(state: State.loaded));
     } catch (e) {
@@ -100,18 +104,15 @@ class ProductsCartBloc extends Bloc<ProductsCartEvent, ProductsCartState> {
     }
   }
 
-  _sortProducts(Emitter<ProductsCartState> emit,
-      String categoryName) async {
+  _sortProducts(Emitter<ProductsCartState> emit, String categoryName) async {
     try {
       emit(SortProductsState(state: State.loading));
       final prefs = await SharedPreferences.getInstance();
-      localProducts = prefs.getStringList("cart_products")??[];
-      for (var i = 0; i < localProducts.length; i++) {
-        if (CartProductModel.fromJson(json.decode(localProducts[i])).categoryName ==
-            categoryName) {
-          sortProducts.add(localProducts[i]);
-        }
-      }
+      sortProducts = prefs.getStringList("cart_products") ?? [];
+      sortProducts.removeWhere((product) {
+        return CartProductModel.fromJson(json.decode(product)).categoryName !=
+            categoryName;
+      });
       print("sort category => $categoryName => $sortProducts");
       emit(SortProductsState(state: State.loaded));
     } catch (e) {

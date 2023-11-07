@@ -48,7 +48,7 @@ class ProductModelsPage extends StatelessWidget {
         bloc: bloc,
         builder: (context, state) {
           return Text(
-            args["category_item_name"],
+            args["category_item_name"]??"",
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
