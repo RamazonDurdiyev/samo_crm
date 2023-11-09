@@ -22,6 +22,71 @@ class ProductModel {
 }
 
 @JsonSerializable()
+class DeleteProductModel {
+  final int? outContractNumber;
+  final int? sellPlaceId;
+  final int? inProductId;
+  final int? quantity;
+
+  DeleteProductModel({
+    this.outContractNumber,
+    this.sellPlaceId,
+    this.inProductId,
+    this.quantity,
+  });
+
+  factory DeleteProductModel.fromJson(Map<String, dynamic> data) =>
+      _$DeleteProductModelFromJson(data);
+
+  Map<String, dynamic> toJson() => _$DeleteProductModelToJson(this);
+}
+
+@JsonSerializable()
+class RProductModel {
+  final int? id;
+  final String? name;
+  int? totalPrice;
+  int? totalNumber;
+  final List<RProductItemModel>? children;
+
+  RProductModel({
+    this.id,
+    this.name,
+    this.totalPrice,
+    this.totalNumber,
+    this.children,
+  });
+
+  factory RProductModel.fromJson(Map<String, dynamic> data) =>
+      _$RProductModelFromJson(data);
+
+  Map<String, dynamic> toJson() => _$RProductModelToJson(this);
+}
+
+@JsonSerializable()
+class RProductItemModel {
+  final int? id;
+  final String? name;
+  final double? price;
+  final int? quantity;
+
+  final String? imageUrl;
+
+  RProductItemModel({
+    this.id,
+    this.name,
+    this.price,
+    this.quantity,
+    this.imageUrl,
+  });
+
+  factory RProductItemModel.fromJson(Map<String, dynamic> data) =>
+      _$RProductItemModelFromJson(data);
+
+  Map<String, dynamic> toJson() => _$RProductItemModelToJson(this);
+}
+
+@JsonSerializable()
 class ProductItemModel {
   final int? id;
   final String? name;
@@ -41,12 +106,20 @@ class ProductItemModel {
 
 @JsonSerializable()
 class CartProductModel {
+  final int? productId;
+  final int? outContractNumber;
+  final int? sellPlaceId;
+  final int? inProductId;
   final String? categoryName;
   final String? name;
   final int? quantity;
   final int? price;
 
   CartProductModel({
+    this.productId,
+    this.outContractNumber,
+    this.sellPlaceId,
+    this.inProductId,
     this.categoryName,
     this.name,
     this.quantity,

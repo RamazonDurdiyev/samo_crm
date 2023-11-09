@@ -1,16 +1,18 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samo_crm/ui/pages/products_cart_page/products_cart_page.dart';
+import 'package:samo_crm/ui/pages/remove_products_page/remove_product_models_page/remove_product_models_page.dart';
 import 'package:samo_crm/ui/pages/remove_products_page/remove_products_bloc.dart';
 import 'package:samo_crm/ui/pages/remove_products_page/remove_products_event.dart';
 import 'package:samo_crm/ui/pages/remove_products_page/remove_products_state.dart';
 
-class RemoveProductPage extends StatelessWidget {
-  const RemoveProductPage({super.key});
+class RemoveProductsPage extends StatelessWidget {
+  const RemoveProductsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final bloc = RemoveProductBloc();
+    bloc.add(FetchCategoriesEvent());
     return Scaffold(
       appBar: _buildAppBar(context, bloc),
       body: _buildBody(bloc),
@@ -128,59 +130,47 @@ class RemoveProductPage extends StatelessWidget {
   }
 
   _buildFilterTab(RemoveProductBloc bloc) {
-    return DefaultTabController(
-      length: 6,
-      initialIndex: bloc.currentIndexOfTab,
-      child: TabBar(
-        padding: const EdgeInsets.only(left: 16),
-        isScrollable: true,
-        splashBorderRadius: const BorderRadius.all(
-          Radius.circular(
-            100,
-          ),
-        ),
-        unselectedLabelColor: Colors.grey,
-        labelColor: Colors.white,
-        indicator: const BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(
-              100,
-            ),
-          ),
-          color: Colors.indigo,
-        ),
-        onTap: (value) {
-          bloc.add(
-            ChangeRemoveTabEvent(value: value),
-          );
-        },
-        tabs: const [
-          Tab(
-            height: 35,
-            text: "All",
-          ),
-          Tab(
-            height: 35,
-            text: "Tayyor",
-          ),
-          Tab(
-            height: 35,
-            text: "Qismlar",
-          ),
-          Tab(
-            height: 35,
-            text: "PC",
-          ),
-          Tab(
-            height: 35,
-            text: "Tablet",
-          ),
-          Tab(
-            height: 35,
-            text: "Phone",
-          ),
-        ],
-      ),
+    return BlocBuilder<RemoveProductBloc, RemoveProductState>(
+      bloc: bloc,
+      builder: (context, state) {
+        final isloading =
+            state is AddFetchCategoriesState && state.state == State.loading;
+        return DefaultTabController(
+          length: bloc.categoriesList.length,
+          initialIndex: bloc.currentIndexOfTab,
+          child: TabBar(
+              padding: const EdgeInsets.only(left: 16),
+              isScrollable: true,
+              splashBorderRadius: const BorderRadius.all(
+                Radius.circular(
+                  100,
+                ),
+              ),
+              unselectedLabelColor: Colors.grey,
+              labelColor: Colors.white,
+              indicator: const BoxDecoration(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    100,
+                  ),
+                ),
+                color: Colors.indigo,
+              ),
+              onTap: (value) {
+                bloc.add(
+                  ChangeTabEvent(value: value),
+                );
+              },
+              tabs: bloc.categoriesList
+                  .map(
+                    (e) => Tab(
+                      height: 35,
+                      text: isloading ? "" : e.name,
+                    ),
+                  )
+                  .toList()),
+        );
+      },
     );
   }
 
@@ -188,181 +178,90 @@ class RemoveProductPage extends StatelessWidget {
     return BlocBuilder<RemoveProductBloc, RemoveProductState>(
       bloc: bloc,
       builder: (context, state) {
-        return ListView.builder(
-          padding: const EdgeInsets.all(0),
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: 20,
-          itemBuilder: (context, index) {
-            return bloc.currentIndexOfTab == 0
-                ? _buildListItemReadies(bloc, index)
-                : _buildListItemParts(bloc, index);
-          },
-        );
+        final isloading =
+            state is AddFetchCategoriesState && state.state == State.loading;
+        return bloc.currentIndexOfTab >= 0 &&
+                bloc.currentIndexOfTab < bloc.categoriesList.length
+            ? ListView.builder(
+                padding: const EdgeInsets.all(0),
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: isloading
+                    ? 0
+                    : bloc.categoriesList[bloc.currentIndexOfTab].categoryItems
+                            ?.length ??
+                        0,
+                itemBuilder: (context, index) {
+                  return _buildListItem(context, bloc, index, isloading);
+                },
+              )
+            : const SizedBox();
       },
     );
   }
 
-  _buildListItemParts(RemoveProductBloc bloc, int index) {
+  _buildListItem(
+      BuildContext context, RemoveProductBloc bloc, int index, bool isloading) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 2),
-      child: Card(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
-          ),
-        ),
-        elevation: 3,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  const Icon(
-                    Icons.widgets_sharp,
-                     color: Colors.indigo,
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  const Text(
-                    "SSD part",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Expanded(child: SizedBox()),
-                  GestureDetector(
-                    onTap: () {
-                      bloc.add(TryToExpandRemovePageEvent(index: index));
-                    },
-                    child: const SizedBox(
-                      height: 30,
-                      width: 30,
-                      child: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                ],
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return const RemoveProductModelsPage();
+              },
+              settings: RouteSettings(
+                arguments: {
+                  "id": bloc.categoriesList[index].id,
+                  "category_item_name": bloc
+                      .categoriesList[bloc.currentIndexOfTab]
+                      .categoryItems?[index]
+                      .name,
+                },
               ),
-              bloc.isExpandedItems[index] == true
-                  ? ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return _buildPartsChildren("Acer");
-                      },
-                    )
-                  : const SizedBox(),
-            ],
+            ),
+          );
+        },
+        child: Card(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(16),
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  _buildPartsChildren(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  _buildListItemReadies(RemoveProductBloc bloc, int index) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 8, bottom: 2),
-      child: Card(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
+          elevation: 3,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 8,
+            ),
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 16,
+                ),
+                const Icon(
+                  Icons.widgets_sharp,
+                  color: Colors.indigo,
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                Text(
+                  isloading
+                      ? ""
+                      : bloc.categoriesList[bloc.currentIndexOfTab]
+                              .categoryItems?[index].name
+                              .toString() ??
+                          "",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        elevation: 3,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  const Icon(
-                    Icons.widgets_sharp,
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  const Text(
-                    "Monobloc",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Expanded(child: SizedBox()),
-                  GestureDetector(
-                    onTap: () {
-                      bloc.add(TryToExpandRemovePageEvent(index: index));
-                    },
-                    child: const SizedBox(
-                      height: 30,
-                      width: 30,
-                      child: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                ],
-              ),
-              bloc.isExpandedItems[index] == true
-                  ? ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return _buildReadiesChildren("Acer");
-                      },
-                    )
-                  : const SizedBox(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  _buildReadiesChildren(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );

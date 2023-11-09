@@ -31,10 +31,27 @@ class DeleteLocalProductState extends ProductsCartState{
   List<Object?> get props => [state];
 }
 
+class DeleteAllLocalProductsState extends ProductsCartState{
+  final State state;
+
+  DeleteAllLocalProductsState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
 class SortProductsState extends ProductsCartState{
   final State state;
 
   SortProductsState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
+class PostProductState extends ProductsCartState {
+  final State state;
+
+  PostProductState({required this.state});
+
   @override
   List<Object?> get props => [state];
 }

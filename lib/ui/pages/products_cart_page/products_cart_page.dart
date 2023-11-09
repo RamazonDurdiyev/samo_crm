@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart' hide State;
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samo_crm/models/product_model/product_model.dart';
@@ -14,7 +15,7 @@ class CartPage extends StatelessWidget {
     final bloc = ProductsCartBloc();
     bloc.add(GetLocalProductsEvent());
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: _buildAppBar(context,bloc),
       body: _buildBody(context, bloc),
     );
   }
@@ -37,7 +38,7 @@ class CartPage extends StatelessWidget {
                   const SizedBox(
                     height: 8,
                   ),
-                  _buildConfirmButton(context),
+                  _buildConfirmButton(context, bloc),
                 ],
               )
             : _buildEmptyText();
@@ -57,7 +58,7 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  _buildConfirmButton(BuildContext context) {
+  _buildConfirmButton(BuildContext context, ProductsCartBloc bloc) {
     return Container(
       color: const Color.fromARGB(255, 236, 234, 234),
       child: Padding(
@@ -66,7 +67,73 @@ class CartPage extends StatelessWidget {
           vertical: 8,
         ),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return CupertinoAlertDialog(
+                  title: Text(
+                    bloc.isRemove == true ? "Remove products" : "Post products",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  content: Text(
+                    bloc.isRemove == true
+                        ? "Are you sure to remove products in cart?"
+                        : "Are you sure to post products in cart?",
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  actions: [
+                    CupertinoDialogAction(
+                      onPressed: () {
+                        bloc.isRemove == true
+                            ? bloc.add(
+                                DeleteProductEvent(
+                                  productDelete: bloc.localProducts
+                                      .map<DeleteProductModel>((e) {
+                                    return DeleteProductModel.fromJson(
+                                        json.decode(e));
+                                  }).toList(),
+                                ),
+                              )
+                            : bloc.add(
+                                PostProductEvent(
+                                  newProducts: bloc.localProducts
+                                      .map<PostProductModel>((e) {
+                                    return PostProductModel.fromJson(
+                                        json.decode(e));
+                                  }).toList(),
+                                ),
+                              );
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        "Yes",
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
+                    ),
+                    CupertinoDialogAction(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(
+                            color: Colors.indigo,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
           style: ElevatedButton.styleFrom(
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
@@ -87,55 +154,103 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  _buildAppBar(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      automaticallyImplyLeading: false,
-      backgroundColor: Colors.transparent,
-      title: const Text(
-        "Savat",
-        style: TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(
-            right: 8,
-          ),
-          child: GestureDetector(
-            onTap: () {},
-            child: const Icon(
-              Icons.delete,
-              color: Colors.indigo,
-              size: 28,
+  _buildAppBar(BuildContext context, ProductsCartBloc bloc) {
+    return 
+           AppBar(
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.transparent,
+            title: const Text(
+              "Savat",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-        ),
-      ],
-      leading: GestureDetector(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: const Padding(
-          padding: EdgeInsets.only(left: 8),
-          child: Icon(
-            Icons.arrow_back,
-            size: 28,
-            color: Colors.indigo,
-          ),
-        ),
-      ),
-      bottom: PreferredSize(
-        preferredSize: const Size(double.infinity, 0),
-        child: Column(
-          children: [
-            _buildCustomDivider(),
-          ],
-        ),
-      ),
-    );
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  right: 8,
+                ),
+                child: GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return CupertinoAlertDialog(
+                              title: const Text(
+                                "Delete products",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              content: const Text(
+                                "Are you sure to delete all products in cart?",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              actions: [
+                                CupertinoDialogAction(
+                                  onPressed: () {
+                                    bloc.add(DeleteAllLocalProductsEvent());
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text(
+                                    "Yes",
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                ),
+                                CupertinoDialogAction(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text(
+                                    "Cancel",
+                                    style: TextStyle(
+                                        color: Colors.indigo,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.indigo,
+                        size: 28,
+                      ),
+                    ),
+                
+              ),
+            ],
+            leading: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: const Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Icon(
+                  Icons.arrow_back,
+                  size: 28,
+                  color: Colors.indigo,
+                ),
+              ),
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size(double.infinity, 0),
+              child: Column(
+                children: [
+                  _buildCustomDivider(),
+                ],
+              ),
+            ),
+          );
   }
 
   _buildCustomDivider() {
@@ -171,8 +286,12 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  _buildProductsItem(ProductsCartBloc bloc, int parentIndex, bool isLoading,
-      String categoryName,) {
+  _buildProductsItem(
+    ProductsCartBloc bloc,
+    int parentIndex,
+    bool isLoading,
+    String categoryName,
+  ) {
     return Card(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
@@ -327,7 +446,9 @@ class CartPage extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              // bloc.add(DeleteLocalProductEvent(product: product));
+              bloc.add(DeleteLocalProductEvent(
+                  product:
+                      CartProductModel.fromJson(json.decode(list[index]))));
             },
             child: const Icon(
               Icons.remove_circle,

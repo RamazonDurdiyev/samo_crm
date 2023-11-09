@@ -39,3 +39,4 @@ class SaveLocalToCartEvent extends AddProductEvent{
   @override
   List<Object?> get props => [product];
 }
+

@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samo_crm/models/product_model/product_model.dart';
-import 'package:samo_crm/ui/pages/add_product_page/add_product_bloc.dart';
-import 'package:samo_crm/ui/pages/add_product_page/add_product_event.dart';
-import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
+import 'package:samo_crm/ui/pages/remove_products_page/remove_products_bloc.dart';
+import 'package:samo_crm/ui/pages/remove_products_page/remove_products_event.dart';
+import 'package:samo_crm/ui/pages/remove_products_page/remove_products_state.dart';
 
-class ProductModelsPage extends StatelessWidget {
-  const ProductModelsPage({super.key});
+class RemoveProductModelsPage extends StatelessWidget {
+  const RemoveProductModelsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final bloc = AddProductBloc();
+    final bloc = RemoveProductBloc();
     bloc.add(
       FetchCategoryByIdEvent(
         id: args["id"],
       ),
     );
+
     return Scaffold(
       appBar: _buildAppBar(context, bloc, args),
       body: _buildBody(context, bloc, args),
@@ -25,7 +26,7 @@ class ProductModelsPage extends StatelessWidget {
   }
 
   _buildBody(
-      BuildContext context, AddProductBloc bloc, Map<String, dynamic> args) {
+      BuildContext context, RemoveProductBloc bloc, Map<String, dynamic> args) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,16 +40,16 @@ class ProductModelsPage extends StatelessWidget {
     );
   }
 
-  _buildAppBar(BuildContext context, AddProductBloc bloc, Map args) {
+  _buildAppBar(BuildContext context, RemoveProductBloc bloc, Map args) {
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
-      title: BlocBuilder<AddProductBloc, AddProductState>(
+      title: BlocBuilder<RemoveProductBloc, RemoveProductState>(
         bloc: bloc,
         builder: (context, state) {
           return Text(
-            args["category_item_name"]??"",
+            args["category_item_name"] ?? "",
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -85,7 +86,7 @@ class ProductModelsPage extends StatelessWidget {
     );
   }
 
-  _buildModelsList(AddProductBloc bloc, Map<String, dynamic> args) {
+  _buildModelsList(RemoveProductBloc bloc, Map<String, dynamic> args) {
     return BlocBuilder(
       bloc: bloc,
       builder: (context, state) {
@@ -104,7 +105,7 @@ class ProductModelsPage extends StatelessWidget {
     );
   }
 
-  _buildModel(AddProductBloc bloc, int index, bool isLoading,
+  _buildModel(RemoveProductBloc bloc, int index, bool isLoading,
       Map<String, dynamic> args) {
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -170,7 +171,7 @@ class ProductModelsPage extends StatelessWidget {
     );
   }
 
-  _buildModelChildList(AddProductBloc bloc, int parentIndex, bool isLoading,
+  _buildModelChildList(RemoveProductBloc bloc, int parentIndex, bool isLoading,
       Map<String, dynamic> args) {
     return ListView.builder(
       shrinkWrap: true,
@@ -185,8 +186,8 @@ class ProductModelsPage extends StatelessWidget {
     );
   }
 
-  _buildModelChild(BuildContext context, AddProductBloc bloc, int parentIndex,
-      int index, bool isLoading, Map<String, dynamic> args) {
+  _buildModelChild(BuildContext context, RemoveProductBloc bloc,
+      int parentIndex, int index, bool isLoading, Map<String, dynamic> args) {
     return InkWell(
       onTap: () {
         showDialog(
@@ -214,7 +215,7 @@ class ProductModelsPage extends StatelessWidget {
                   const SizedBox(
                     height: 8,
                   ),
-                  _buildTextField(bloc.costCtrl, "Narxini kiriting"),
+                  _buildTextField(bloc.contractCtrl, "Kontrakt raqami"),
                 ],
               ),
               actions: [
@@ -237,17 +238,22 @@ class ProductModelsPage extends StatelessWidget {
                       bloc.add(
                         SaveLocalToCartEvent(
                           product: CartProductModel(
-                            productId: bloc.productsById[parentIndex].children?[index].id,
+                            inProductId: bloc
+                                .productsById[parentIndex].children?[index].id,
                             name: bloc.productsById[parentIndex]
                                 .children?[index].name,
                             categoryName: args["category_item_name"],
-                            price: bloc.costCtrl.text.isNotEmpty 
-                            ? int.parse(
-                              bloc.costCtrl.text,
-                            ) : 0,
-                            quantity: bloc.countCtrl.text.isNotEmpty ? int.parse(
-                              bloc.countCtrl.text,
-                            ) : 0,
+                            price: bloc.contractCtrl.text.isNotEmpty
+                                ? int.parse(
+                                    bloc.contractCtrl.text,
+                                  )
+                                : 0,
+                            quantity: bloc.countCtrl.text.isNotEmpty
+                                ? int.parse(
+                                    bloc.countCtrl.text,
+                                  )
+                                : 0,
+
                           ),
                         ),
                       );

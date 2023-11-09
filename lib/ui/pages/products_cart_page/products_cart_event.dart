@@ -24,11 +24,31 @@ class DeleteLocalProductEvent extends ProductsCartEvent{
   List<Object?> get props => [product];
 }
 
+class DeleteAllLocalProductsEvent extends ProductsCartEvent{
+  @override
+  List<Object?> get props => [];
+}
+
 class SortProductsEvent extends ProductsCartEvent{
-  // final List<String> products;
   final String categoryName;
 
   SortProductsEvent({ required this.categoryName});
   @override
   List<Object?> get props => [categoryName];
+}
+
+class PostProductEvent extends ProductsCartEvent {
+  final List<PostProductModel> newProducts;
+
+  PostProductEvent({required this.newProducts});
+  @override
+  List<Object?> get props => [newProducts];
+}
+
+class DeleteProductEvent extends ProductsCartEvent {
+  final List<DeleteProductModel> productDelete;
+
+  DeleteProductEvent({required this.productDelete});
+  @override
+  List<Object?> get props => [productDelete];
 }

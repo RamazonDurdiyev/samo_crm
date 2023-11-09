@@ -35,7 +35,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   _fetchCategories(Emitter<ProductsState> emit) async {
     try {
       emit(FetchCategoriesState(state: State.loading));
-      final res = await repo.fetchCategories() ;
+      final res = await repo.fetchCategories();
       categoriesList = res;
       emit(FetchCategoriesState(state: State.loaded));
     } catch (e) {

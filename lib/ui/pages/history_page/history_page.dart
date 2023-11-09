@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marquee/marquee.dart';
+import 'package:samo_crm/ui/pages/history_page/history_bloc.dart';
 import 'package:samo_crm/ui/pages/history_page/history_detail_page/history_detail_page.dart';
+import 'package:samo_crm/ui/pages/history_page/history_event.dart';
+import 'package:samo_crm/ui/pages/history_page/history_state.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final bloc = HistoryBloc();
+    bloc.add(FetchHistoriesEvent());
     return Scaffold(
       appBar: _buildAppBar(context),
-      body: _buildBody(),
+      body: _buildBody(bloc),
     );
   }
 
@@ -19,7 +25,7 @@ class HistoryPage extends StatelessWidget {
       automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
       title: const Text(
-        "Tarix",
+        "Tarixlar",
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -47,12 +53,14 @@ class HistoryPage extends StatelessWidget {
     );
   }
 
-  _buildBody() {
+  _buildBody(HistoryBloc bloc) {
     return SingleChildScrollView(
       child: Column(
         children: [
-         const SizedBox(height: 8,),
-          _buildListView(),
+          const SizedBox(
+            height: 8,
+          ),
+          _buildListView(bloc),
         ],
       ),
     );
@@ -65,21 +73,23 @@ class HistoryPage extends StatelessWidget {
     );
   }
 
-  _buildListView() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(0),
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: 20,
-      itemBuilder: (context, index) {
-        return _buildListItem(context);
-      },
-    );
+  _buildListView(HistoryBloc bloc) {
+    return BlocBuilder<HistoryBloc, HistoryState>(
+        bloc: bloc,
+        builder: (context, state) {
+          return ListView.builder(
+            padding: const EdgeInsets.all(0),
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: bloc.histories.length,
+            itemBuilder: (context, index) {
+              return _buildListItem(context, bloc, index);
+            },
+          );
+        });
   }
 
- 
-
-  _buildListItem(BuildContext context) {
+  _buildListItem(BuildContext context, HistoryBloc bloc, int index) {
     return Padding(
       padding: const EdgeInsets.only(
         left: 8,
@@ -118,9 +128,9 @@ class HistoryPage extends StatelessWidget {
                   const SizedBox(
                     height: 8,
                   ),
-                  const Row(
+                  Row(
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         radius: 20,
                         backgroundColor: Colors.indigo,
                         child: CircleAvatar(
@@ -132,22 +142,26 @@ class HistoryPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 8,
                       ),
-                      Text(
+                      const Text(
                         "Falonchi",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Expanded(
+                      const Expanded(
                         child: SizedBox(),
                       ),
                       Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
+                        bloc.histories[index].status == 10
+                            ? Icons.error
+                            : Icons.check_circle,
+                        color: bloc.histories[index].status == 10
+                            ? Colors.red
+                            : Colors.green,
                       ),
                     ],
                   ),
@@ -177,7 +191,8 @@ class HistoryPage extends StatelessWidget {
                           scrollAxis: Axis.horizontal,
                           fadingEdgeEndFraction: 0.2,
                           fadingEdgeStartFraction: 0.2,
-                          text: "Abu Saxiy Bozori" "         ",
+                          text: "${bloc.histories[index].tradePlaceName}"
+                              "         ",
                         ),
                       ),
                     ],
@@ -194,10 +209,7 @@ class HistoryPage extends StatelessWidget {
                         child: SizedBox(),
                       ),
                       Text(
-                        DateTime.now().toString().substring(
-                              0,
-                              16,
-                            ),
+                        bloc.histories[index].date.toString(),
                         style: const TextStyle(
                           fontSize: 16,
                         ),
@@ -216,17 +228,21 @@ class HistoryPage extends StatelessWidget {
                         child: SizedBox(),
                       ),
                       Container(
-                        decoration: const BoxDecoration(
-                          color: Color.fromARGB(255, 251, 18, 2),
-                          borderRadius: BorderRadius.all(
+                        decoration: BoxDecoration(
+                          color: bloc.histories[index].status == 10
+                              ? const Color.fromARGB(255, 251, 18, 2)
+                              : Colors.green,
+                          borderRadius: const BorderRadius.all(
                             Radius.circular(100),
                           ),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                           child: Text(
-                            "Tasdiqlanmadi",
-                            style: TextStyle(color: Colors.white),
+                            bloc.histories[index].status == 10
+                                ? "Tasdiqlanmadi"
+                                : "Tasdiqlandi",
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
                       ),

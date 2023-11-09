@@ -7,25 +7,44 @@ class Initial extends RemoveProductState {
   List<Object?> get props => [];
 }
 
-class ChangeRemoveTabState extends RemoveProductState {
+class ChangeTabState extends RemoveProductState {
   final State state;
 
-  ChangeRemoveTabState({required this.state});
+  ChangeTabState({required this.state});
   @override
   List<Object?> get props => [state];
 }
 
-class TryToExpandRemovePageState extends RemoveProductState {
+class TryToExpandState extends RemoveProductState {
   final State state;
 
-  TryToExpandRemovePageState({required this.state});
+  TryToExpandState({required this.state});
   @override
   List<Object?> get props => [state];
 }
 
-enum State {
-  initial,
-  loading,
-  loaded,
-  error,
+class AddFetchCategoriesState extends RemoveProductState {
+  final State state;
+
+  AddFetchCategoriesState({required this.state});
+  @override
+  List<Object?> get props => [state];
 }
+
+class FetchCategoryByIdState extends RemoveProductState{
+  final State state;
+
+  FetchCategoryByIdState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
+class SaveLocalToCartState extends RemoveProductState {
+  final State state;
+
+  SaveLocalToCartState({required this.state});
+  @override
+  List<Object?> get props => [state];
+}
+
+enum State { initial, loading, loaded, error }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:samo_crm/models/product_model/product_model.dart';
+import 'package:samo_crm/repo/product_repo/product_repo.dart';
 import 'package:samo_crm/ui/pages/products_cart_page/products_cart_event.dart';
 import 'package:samo_crm/ui/pages/products_cart_page/products_cart_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +24,19 @@ class ProductsCartBloc extends Bloc<ProductsCartEvent, ProductsCartState> {
     on<SortProductsEvent>((event, emit) async {
       await _sortProducts(emit, event.categoryName);
     });
+    on<PostProductEvent>(
+      (event, emit) async {
+        await _postProduct(emit, event.newProducts);
+      },
+    );
+    on<DeleteProductEvent>(
+      (event, emit) async {
+        await _deleteProduct(emit, event.productDelete);
+      },
+    );
+    on((event, emit) async {
+      await _deleteAllLocalProducts(emit);
+    });
   }
 
   // Controllers
@@ -31,6 +45,8 @@ class ProductsCartBloc extends Bloc<ProductsCartEvent, ProductsCartState> {
 
   // Data
 
+  ProductRepo repo = ProductRepo();
+  bool isRemove = false;
   List isItemExpanded = List.filled(20, false);
   List<String> localProducts = [];
   List categoryNames = [];
@@ -39,7 +55,8 @@ class ProductsCartBloc extends Bloc<ProductsCartEvent, ProductsCartState> {
   _tryToExpand(Emitter<ProductsCartState> emit, int index) {
     try {
       emit(TryToExpandState(state: State.loading));
-      List trueItems = isItemExpanded.where((element) => element == true).toList();
+      List trueItems =
+          isItemExpanded.where((element) => element == true).toList();
       if (trueItems.length == 1 && isItemExpanded[index] != true) {
         isItemExpanded = List.filled(20, false);
       }
@@ -55,6 +72,7 @@ class ProductsCartBloc extends Bloc<ProductsCartEvent, ProductsCartState> {
       emit(GetLocalProductsState(state: State.loading));
       final prefs = await SharedPreferences.getInstance();
       localProducts = prefs.getStringList("cart_products") ?? [];
+      isRemove = prefs.getBool("is_remove") ?? false;
       for (var i = 0; i < localProducts.length; i++) {
         if (!categoryNames.contains(
             CartProductModel.fromJson(json.decode(localProducts[i]))
@@ -64,7 +82,6 @@ class ProductsCartBloc extends Bloc<ProductsCartEvent, ProductsCartState> {
                   .categoryName);
         }
       }
-
       if (kDebugMode) {
         print(
             "ProductsCartBloc _getLocalProducts localProducts => $localProducts");
@@ -85,6 +102,17 @@ class ProductsCartBloc extends Bloc<ProductsCartEvent, ProductsCartState> {
       final prefs = await SharedPreferences.getInstance();
       localProducts = prefs.getStringList("cart_products") ?? [];
       localProducts.remove(json.encode(product.toJson()));
+      sortProducts.remove(json.encode(product.toJson()));
+      categoryNames = [];
+      for (var i = 0; i < localProducts.length; i++) {
+        if (!categoryNames.contains(
+            CartProductModel.fromJson(json.decode(localProducts[i]))
+                .categoryName)) {
+          categoryNames.add(
+              CartProductModel.fromJson(json.decode(localProducts[i]))
+                  .categoryName);
+        }
+      }
       prefs.setStringList("cart_products", localProducts);
       if (kDebugMode) {
         print(
@@ -113,12 +141,67 @@ class ProductsCartBloc extends Bloc<ProductsCartEvent, ProductsCartState> {
         return CartProductModel.fromJson(json.decode(product)).categoryName !=
             categoryName;
       });
-      print("sort category => $categoryName => $sortProducts");
       emit(SortProductsState(state: State.loaded));
     } catch (e) {
       emit(SortProductsState(state: State.error));
       if (kDebugMode) {
         print("ProductsCartBloc _sortProducts error => $e");
+      }
+    }
+  }
+
+  _postProduct(
+      Emitter<ProductsCartState> emit, List<PostProductModel> products) async {
+    try {
+      emit(PostProductState(state: State.loading));
+      repo.postProducts(products);
+      if (kDebugMode) {
+        print("ProductsCartBloc _postProducts posted succesfully");
+      }
+      emit(PostProductState(state: State.loaded));
+    } catch (e) {
+      emit(PostProductState(state: State.error));
+      if (kDebugMode) {
+        print("ProductsCartBloc _postProducts error => $e");
+      }
+    }
+  }
+
+  _deleteProduct(Emitter<ProductsCartState> emit,
+      List<DeleteProductModel> products) async {
+    try {
+      emit(PostProductState(state: State.loading));
+      repo.deleteProducts(products);
+      if (kDebugMode) {
+        print("ProductsCartBloc _deleteProducts deleted succesfully");
+      }
+      emit(PostProductState(state: State.loaded));
+    } catch (e) {
+      emit(PostProductState(state: State.error));
+      if (kDebugMode) {
+        print("ProductsCartBloc _deleteProducts error => $e");
+      }
+    }
+  }
+
+  _deleteAllLocalProducts(Emitter<ProductsCartState> emit) async {
+    try {
+      emit(DeleteAllLocalProductsState(state: State.loading));
+      final prefs = await SharedPreferences.getInstance();
+      localProducts = [];
+      sortProducts = [];
+      prefs.setBool("is_remove", false);
+      prefs.setStringList("cart_products", []);
+      if (kDebugMode) {
+        print(
+            "ProductsCartBloc _deleteAllLocalProducts all products deleted succesfully");
+      }
+      emit(DeleteAllLocalProductsState(state: State.loaded));
+    } catch (e) {
+      emit(DeleteAllLocalProductsState(state: State.error));
+      if (kDebugMode) {
+        print(
+            "ProductsCartBloc _deleteAllLocalProducts error => $e");
       }
     }
   }

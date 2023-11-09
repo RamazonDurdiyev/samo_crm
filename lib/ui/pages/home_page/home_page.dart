@@ -314,7 +314,7 @@ class HomePage extends StatelessWidget {
           context,
           Icons.remove_circle,
           "Mahsulot chiqarish",
-          const RemoveProductPage(),
+          const RemoveProductsPage(),
         ),
       ],
       options:

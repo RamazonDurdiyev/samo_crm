@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:samo_crm/models/category_model/category_model.dart';
 import 'package:samo_crm/models/product_model/product_model.dart';
 import 'package:samo_crm/repo/category_repo/category_repo.dart';
+import 'package:samo_crm/repo/product_repo/product_repo.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_event.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,6 +39,7 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
 
   // Data
   CategoryRepo repo = CategoryRepo();
+  ProductRepo productRepo = ProductRepo();
   List<CategoryModel> categoriesList = [];
   List<String> localProducts = [];
   List<ProductModel> productsById = [];
@@ -118,7 +120,7 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
   _fetchCategoryById(Emitter<AddProductState> emit, int id) async {
     try {
       emit(FetchCategoryByIdState(state: State.loading));
-      productsById = await repo.fetchCategoryById(id);
+      productsById = await productRepo.fetchProductById(id);
       if (kDebugMode) {
         print(
             "AddProductBloc _fetchCategoryById categoryById products => $productsById");
