@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_bloc.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
-import 'package:samo_crm/ui/pages/add_product_page/product_models/product_models_page.dart';
+import 'package:samo_crm/ui/pages/add_product_page/add_product_models/add_product_models_page.dart';
 import 'package:samo_crm/ui/pages/products_cart_page/products_cart_page.dart';
 
 import 'add_product_event.dart';
@@ -211,7 +211,7 @@ class AddProductPage extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) {
-                return const ProductModelsPage();
+                return const AddProductModelsPage();
               },
               settings: RouteSettings(
                 arguments: 

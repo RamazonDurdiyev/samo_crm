@@ -1,9 +1,13 @@
+
+
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:samo_crm/ui/pages/products_cart_page/products_cart_page.dart';
 import 'package:samo_crm/ui/pages/products_page/products_bloc.dart';
-import 'package:samo_crm/ui/pages/products_page/products_state.dart';
+import 'package:samo_crm/ui/pages/products_page/products_event.dart';
 
-import 'products_event.dart';
+import 'product_model_page/products_model_page.dart';
+import 'products_state.dart';
 
 class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});
@@ -31,15 +35,14 @@ class ProductsPage extends StatelessWidget {
           ),
           child: GestureDetector(
             onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) {
-              //       return const NotificationPage();
-              //     },
-              //   ),
-              // );
-              // bloc.add(FetchCategoriesEvent());
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const CartPage();
+                  },
+                ),
+              );
             },
             child: const Icon(
               Icons.shopping_cart_outlined,
@@ -71,11 +74,25 @@ class ProductsPage extends StatelessWidget {
             const SizedBox(
               height: 8,
             ),
-            _buildFilterTab(
-              bloc,
-            ),
+            _buildFilterTab(bloc),
           ],
         ),
+      ),
+    );
+  }
+
+  _buildBody(ProductsBloc bloc) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 8,
+          ),
+          _buildListView(bloc),
+          const SizedBox(
+            height: 8,
+          ),
+        ],
       ),
     );
   }
@@ -108,22 +125,6 @@ class ProductsPage extends StatelessWidget {
     );
   }
 
-  _buildBody(ProductsBloc bloc) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 8,
-          ),
-          _buildListView(bloc),
-          const SizedBox(
-            height: 8,
-          ),
-        ],
-      ),
-    );
-  }
-
   _buildCustomDivider() {
     return Container(
       height: 1,
@@ -136,42 +137,41 @@ class ProductsPage extends StatelessWidget {
       bloc: bloc,
       builder: (context, state) {
         final isloading =
-            state is FetchCategoriesState && state.state == State.loading;
+            state is AddFetchCategoriesState && state.state == State.loading;
         return DefaultTabController(
           length: bloc.categoriesList.length,
-          initialIndex: bloc.currentIndex,
+          initialIndex: bloc.currentIndexOfTab,
           child: TabBar(
-            padding: const EdgeInsets.only(left: 16),
-            isScrollable: true,
-            splashBorderRadius: const BorderRadius.all(
-              Radius.circular(
-                100,
-              ),
-            ),
-            unselectedLabelColor: Colors.grey,
-            labelColor: Colors.white,
-            indicator: const BoxDecoration(
-              borderRadius: BorderRadius.all(
+              padding: const EdgeInsets.only(left: 16),
+              isScrollable: true,
+              splashBorderRadius: const BorderRadius.all(
                 Radius.circular(
                   100,
                 ),
               ),
-              color: Colors.indigo,
-            ),
-            onTap: (value) {
-              bloc.add(
-                ChangeProductsTabEvent(value: value),
-              );
-            },
-            tabs: bloc.categoriesList
-                .map(
-                  (e) => Tab(
-                    height: 35,
-                    text: isloading ? "" : e.name,
+              unselectedLabelColor: Colors.grey,
+              labelColor: Colors.white,
+              indicator: const BoxDecoration(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    100,
                   ),
-                )
-                .toList(),
-          ),
+                ),
+                color: Colors.indigo,
+              ),
+              onTap: (value) {
+                bloc.add(
+                  ChangeTabEvent(value: value),
+                );
+              },
+              tabs: bloc.categoriesList
+                  .map(
+                    (e) => Tab(
+                      height: 35,
+                      text: isloading ? "" : e.name,
+                    ),
+                  )
+                  .toList()),
         );
       },
     );
@@ -181,57 +181,89 @@ class ProductsPage extends StatelessWidget {
     return BlocBuilder<ProductsBloc, ProductsState>(
       bloc: bloc,
       builder: (context, state) {
-        final isLoading =
-            state is FetchCategoriesState && state.state == State.loading;
-        return bloc.currentIndex >= 0 && bloc.currentIndex < bloc.categoriesList.length ? ListView.builder(
-          padding: const EdgeInsets.all(0),
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: isLoading ? 0 : bloc.categoriesList[bloc.currentIndex].categoryItems?.length ?? 0,
-          itemBuilder: (context, index) {
-            return _buildListItems(bloc, index);
-          },
-        ) : const SizedBox();
+        final isloading =
+            state is AddFetchCategoriesState && state.state == State.loading;
+        return bloc.currentIndexOfTab >= 0 &&
+                bloc.currentIndexOfTab < bloc.categoriesList.length
+            ? ListView.builder(
+                padding: const EdgeInsets.all(0),
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: isloading
+                    ? 0
+                    : bloc.categoriesList[bloc.currentIndexOfTab].categoryItems
+                            ?.length ??
+                        0,
+                itemBuilder: (context, index) {
+                  return _buildListItem(context, bloc, index, isloading);
+                },
+              )
+            : const SizedBox();
       },
     );
   }
 
-  _buildListItems(ProductsBloc bloc, int index) {
-  final itemName = bloc
-            .categoriesList[bloc.currentIndex].categoryItems?[index].name
-            .toString() ??
-        "";
+  _buildListItem(
+      BuildContext context, ProductsBloc bloc, int index, bool isloading) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 2),
-      child: Card(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return const ProductModelsPage();
+              },
+              settings: RouteSettings(
+                arguments: {
+                  "id": bloc.categoriesList[index].id,
+                  "category_item_name": bloc
+                      .categoriesList[bloc.currentIndexOfTab]
+                      .categoryItems?[index]
+                      .name,
+                },
+              ),
+            ),
+          );
+        },
+        child: Card(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(16),
+            ),
           ),
-        ),
-        elevation: 3,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 16,
-              ),
-              const Icon(
-                Icons.widgets_sharp,
-                color: Colors.indigo,
-              ),
-              const SizedBox(
-                width: 16,
-              ),
-              Text(
-                itemName,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+          elevation: 3,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 8,
+            ),
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 16,
                 ),
-              ),
-            ],
+                const Icon(
+                  Icons.widgets_sharp,
+                  color: Colors.indigo,
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                Text(
+                  isloading
+                      ? ""
+                      : bloc.categoriesList[bloc.currentIndexOfTab]
+                              .categoryItems?[index].name
+                              .toString() ??
+                          "",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -15,7 +15,7 @@ class CartPage extends StatelessWidget {
     final bloc = ProductsCartBloc();
     bloc.add(GetLocalProductsEvent());
     return Scaffold(
-      appBar: _buildAppBar(context,bloc),
+      appBar: _buildAppBar(context, bloc),
       body: _buildBody(context, bloc),
     );
   }
@@ -155,102 +155,101 @@ class CartPage extends StatelessWidget {
   }
 
   _buildAppBar(BuildContext context, ProductsCartBloc bloc) {
-    return 
-           AppBar(
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.transparent,
-            title: const Text(
-              "Savat",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: 8,
-                ),
-                child: GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return CupertinoAlertDialog(
-                              title: const Text(
-                                "Delete products",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              content: const Text(
-                                "Are you sure to delete all products in cart?",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              actions: [
-                                CupertinoDialogAction(
-                                  onPressed: () {
-                                    bloc.add(DeleteAllLocalProductsEvent());
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text(
-                                    "Yes",
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                ),
-                                CupertinoDialogAction(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text(
-                                    "Cancel",
-                                    style: TextStyle(
-                                        color: Colors.indigo,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: const Icon(
-                        Icons.delete,
-                        color: Colors.indigo,
-                        size: 28,
+    return AppBar(
+      elevation: 0,
+      automaticallyImplyLeading: false,
+      backgroundColor: Colors.transparent,
+      title: const Text(
+        "Savat",
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(
+            right: 8,
+          ),
+          child: GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return CupertinoAlertDialog(
+                    title: const Text(
+                      "Delete products",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                
-              ),
-            ],
-            leading: GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: const Padding(
-                padding: EdgeInsets.only(left: 8),
-                child: Icon(
-                  Icons.arrow_back,
-                  size: 28,
-                  color: Colors.indigo,
-                ),
-              ),
+                    content: const Text(
+                      "Are you sure to delete all products in cart?",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    actions: [
+                      CupertinoDialogAction(
+                        onPressed: () {
+                          bloc.add(DeleteAllLocalProductsEvent());
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
+                        ),
+                      ),
+                      CupertinoDialogAction(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: Colors.indigo,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: const Icon(
+              Icons.delete,
+              color: Colors.indigo,
+              size: 28,
             ),
-            bottom: PreferredSize(
-              preferredSize: const Size(double.infinity, 0),
-              child: Column(
-                children: [
-                  _buildCustomDivider(),
-                ],
-              ),
-            ),
-          );
+          ),
+        ),
+      ],
+      leading: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: const Padding(
+          padding: EdgeInsets.only(left: 8),
+          child: Icon(
+            Icons.arrow_back,
+            size: 28,
+            color: Colors.indigo,
+          ),
+        ),
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size(double.infinity, 0),
+        child: Column(
+          children: [
+            _buildCustomDivider(),
+          ],
+        ),
+      ),
+    );
   }
 
   _buildCustomDivider() {

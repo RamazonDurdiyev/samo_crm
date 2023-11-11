@@ -1,5 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'hide State;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marquee/marquee.dart';
+import 'package:samo_crm/ui/pages/confirm_products_page/confirm_products_bloc.dart';
+import 'package:samo_crm/ui/pages/confirm_products_page/confirm_products_event.dart';
+import 'package:samo_crm/ui/pages/confirm_products_page/confirm_products_state.dart';
 import 'package:samo_crm/ui/pages/history_page/history_detail_page/history_detail_page.dart';
 
 class ConfirmProductsPage extends StatelessWidget {
@@ -7,9 +11,11 @@ class ConfirmProductsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = ConfirmProductsBloc();
+    bloc.add(FetchUnconfirmedsEvent());
     return Scaffold(
       appBar: _buildAppBar(context),
-      body: _buildBody(),
+      body: _buildBody(bloc),
     );
   }
 
@@ -47,12 +53,12 @@ class ConfirmProductsPage extends StatelessWidget {
     );
   }
 
-  _buildBody() {
+  _buildBody(ConfirmProductsBloc bloc) {
     return SingleChildScrollView(
       child: Column(
         children: [
          const SizedBox(height: 8,),
-          _buildListView(),
+          _buildListView(bloc),
         ],
       ),
     );
@@ -65,21 +71,27 @@ class ConfirmProductsPage extends StatelessWidget {
     );
   }
 
-  _buildListView() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(0),
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: 20,
-      itemBuilder: (context, index) {
-        return _buildListItem(context);
-      },
+  _buildListView(ConfirmProductsBloc bloc) {
+    return BlocBuilder<ConfirmProductsBloc,ConfirmProductsState>(
+      bloc: bloc,
+      builder: (context,state) {
+        final isLoading = state is FetchUnconfirmedsState && state.state == State.loading;
+        return ListView.builder(
+          padding: const EdgeInsets.all(0),
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: isLoading ? 0 : bloc.unconfirmeds.length,
+          itemBuilder: (context, index) {
+            return _buildListItem(context,bloc,index);
+          },
+        );
+      }
     );
   }
 
  
 
-  _buildListItem(BuildContext context) {
+  _buildListItem(BuildContext context,ConfirmProductsBloc bloc,int index) {
     return Padding(
       padding: const EdgeInsets.only(
         left: 8,
@@ -177,7 +189,7 @@ class ConfirmProductsPage extends StatelessWidget {
                           scrollAxis: Axis.horizontal,
                           fadingEdgeEndFraction: 0.2,
                           fadingEdgeStartFraction: 0.2,
-                          text: "Abu Saxiy Bozori" "         ",
+                          text: "${bloc.unconfirmeds[index].tradePlaceName}" "         ",
                         ),
                       ),
                     ],
@@ -194,10 +206,7 @@ class ConfirmProductsPage extends StatelessWidget {
                         child: SizedBox(),
                       ),
                       Text(
-                        DateTime.now().toString().substring(
-                              0,
-                              16,
-                            ),
+                        bloc.unconfirmeds[index].date.toString(),
                         style: const TextStyle(
                           fontSize: 16,
                         ),

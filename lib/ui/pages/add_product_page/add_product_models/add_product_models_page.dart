@@ -5,8 +5,8 @@ import 'package:samo_crm/ui/pages/add_product_page/add_product_bloc.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_event.dart';
 import 'package:samo_crm/ui/pages/add_product_page/add_product_state.dart';
 
-class ProductModelsPage extends StatelessWidget {
-  const ProductModelsPage({super.key});
+class AddProductModelsPage extends StatelessWidget {
+  const AddProductModelsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class ProductModelsPage extends StatelessWidget {
         bloc: bloc,
         builder: (context, state) {
           return Text(
-            args["category_item_name"]??"",
+            args["category_item_name"] ?? "",
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -110,61 +110,56 @@ class ProductModelsPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
         horizontal: 8,
       ),
-      child: Card(
-        elevation: 3,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(
-              16,
+      child: InkWell(
+        onTap: () {
+          bloc.add(
+            TryToExpandEvent(
+              index: index,
+            ),
+          );
+        },
+        child: Card(
+          elevation: 3,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(
+                16,
+              ),
             ),
           ),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    bloc.productsById[index].name ?? "",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 8,
                     ),
-                  ),
-                  const Expanded(child: SizedBox()),
-                  InkWell(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(
-                        100,
+                    Text(
+                      bloc.productsById[index].name ?? "",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    onTap: () {
-                      bloc.add(
-                        TryToExpandEvent(
-                          index: index,
-                        ),
-                      );
-                    },
-                    child: Icon(
+                    const Expanded(child: SizedBox()),
+                    Icon(
                       bloc.isExpandedItems[index] == true
                           ? Icons.keyboard_arrow_up
                           : Icons.keyboard_arrow_down,
                     ),
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                ],
+                    const SizedBox(
+                      width: 8,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            bloc.isExpandedItems[index] == true
-                ? _buildModelChildList(bloc, index, isLoading, args)
-                : const SizedBox(),
-          ],
+              bloc.isExpandedItems[index] == true
+                  ? _buildModelChildList(bloc, index, isLoading, args)
+                  : const SizedBox(),
+            ],
+          ),
         ),
       ),
     );
@@ -237,17 +232,21 @@ class ProductModelsPage extends StatelessWidget {
                       bloc.add(
                         SaveLocalToCartEvent(
                           product: CartProductModel(
-                            productId: bloc.productsById[parentIndex].children?[index].id,
+                            productId: bloc
+                                .productsById[parentIndex].children?[index].id,
                             name: bloc.productsById[parentIndex]
                                 .children?[index].name,
                             categoryName: args["category_item_name"],
-                            price: bloc.costCtrl.text.isNotEmpty 
-                            ? int.parse(
-                              bloc.costCtrl.text,
-                            ) : 0,
-                            quantity: bloc.countCtrl.text.isNotEmpty ? int.parse(
-                              bloc.countCtrl.text,
-                            ) : 0,
+                            price: bloc.costCtrl.text.isNotEmpty
+                                ? int.parse(
+                                    bloc.costCtrl.text,
+                                  )
+                                : 0,
+                            quantity: bloc.countCtrl.text.isNotEmpty
+                                ? int.parse(
+                                    bloc.countCtrl.text,
+                                  )
+                                : 0,
                           ),
                         ),
                       );

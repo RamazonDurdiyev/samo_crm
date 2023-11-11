@@ -111,61 +111,56 @@ class RemoveProductModelsPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
         horizontal: 8,
       ),
-      child: Card(
-        elevation: 3,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(
-              16,
+      child: InkWell(
+        onTap: () {
+          bloc.add(
+            TryToExpandEvent(
+              index: index,
+            ),
+          );
+        },
+        child: Card(
+          elevation: 3,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(
+                16,
+              ),
             ),
           ),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    bloc.productsById[index].name ?? "",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 8,
                     ),
-                  ),
-                  const Expanded(child: SizedBox()),
-                  InkWell(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(
-                        100,
+                    Text(
+                      bloc.productsById[index].name ?? "",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    onTap: () {
-                      bloc.add(
-                        TryToExpandEvent(
-                          index: index,
-                        ),
-                      );
-                    },
-                    child: Icon(
+                    const Expanded(child: SizedBox()),
+                    Icon(
                       bloc.isExpandedItems[index] == true
                           ? Icons.keyboard_arrow_up
                           : Icons.keyboard_arrow_down,
                     ),
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                ],
+                    const SizedBox(
+                      width: 8,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            bloc.isExpandedItems[index] == true
-                ? _buildModelChildList(bloc, index, isLoading, args)
-                : const SizedBox(),
-          ],
+              bloc.isExpandedItems[index] == true
+                  ? _buildModelChildList(bloc, index, isLoading, args)
+                  : const SizedBox(),
+            ],
+          ),
         ),
       ),
     );
@@ -253,7 +248,6 @@ class RemoveProductModelsPage extends StatelessWidget {
                                     bloc.countCtrl.text,
                                   )
                                 : 0,
-
                           ),
                         ),
                       );
@@ -273,12 +267,25 @@ class RemoveProductModelsPage extends StatelessWidget {
           },
         );
       },
-      child: Text(
-        bloc.productsById[parentIndex].children?[index].name ?? "",
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+      child: Row(
+        children: [
+          Text(
+            bloc.productsById[parentIndex].children?[index].name ?? "",
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Expanded(child: SizedBox()),
+          Text(
+            "${bloc.productsById[parentIndex].children?[index].price} | ${bloc.productsById[parentIndex].children?[index].quantity}",
+            style: const TextStyle(
+              color: Colors.indigo,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

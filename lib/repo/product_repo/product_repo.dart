@@ -39,7 +39,7 @@ class ProductRepo {
 
   
 ///////////////////////////////////////////////////////////
-//// ************** Fetch product By Id ************* ////
+//// ************** Fetch product By Id ************* /////
 ///////////////////////////////////////////////////////////
 
 Future <List<ProductModel>> fetchProductById(int id) async {
@@ -63,8 +63,8 @@ Future <List<ProductModel>> fetchProductById(int id) async {
     // }
   }
 
-  ///////////////////////////////////////////////////////////
-//// ************** Fetch product By Id Remove Page ************* ////
+///////////////////////////////////////////////////////////
+//// ******* Fetch product By Id Remove Page ********* ////
 ///////////////////////////////////////////////////////////
 
 Future <List<RProductModel>> rFetchProductById(int id) async {
@@ -82,6 +82,32 @@ Future <List<RProductModel>> rFetchProductById(int id) async {
         (product) {
           return RProductModel.fromJson(product);
           
+        },
+      ).toList();
+    // } else {
+    //   throw NetworkException();
+    // }
+  }
+
+
+///////////////////////////////////////////////////////////
+//// *************** Fetch unconfirmeds ************** ////
+///////////////////////////////////////////////////////////
+
+    Future<List<UnconfirmedProductsModel>> fetchUnconfirmeds() async {
+    // if (await networkInfo.isConnected) {
+      final res = await client.get(
+        GET_UNCONFIRMED_PRODUCTS_API,
+        options: Options(
+          headers: {"Access-Control-Allow-Origin": ":*"},
+        ),
+      );
+      if (kDebugMode) {
+        print("fetchUnconfirmeds data => $res");
+      }
+      return res.data["data"].map<UnconfirmedProductsModel>(
+        (product) {
+          return UnconfirmedProductsModel.fromJson(product);
         },
       ).toList();
     // } else {
